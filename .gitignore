@@ -1,0 +1,6 @@
+#Java
+*.class
+bin
+
+#Emacs
+*~
