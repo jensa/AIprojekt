@@ -1,7 +1,7 @@
 
 public interface Box {
 	
-	public Coord getCoords ();
+	public Coords getCoords ();
 	
 	public void setCoords ();
 	

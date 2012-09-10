@@ -13,11 +13,11 @@ public interface Board {
 	
 	public boolean isTileWalkable (int x, int y);
 	
-	public Coord[] getGoals ();
+	public Coords[] getGoals ();
 	
-	public Coord getPlayer ();
+	public Coords getPlayer ();
 	
-	public Coord[] getBoxes ();
+	public Coords[] getBoxes ();
 	
 
 }
