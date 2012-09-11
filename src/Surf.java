@@ -1,4 +1,6 @@
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 
 
 public class Surf implements Board{
@@ -18,7 +20,7 @@ public class Surf implements Board{
 	private char[][] boardMatrix;
 	private ArrayList<Coords> goals;
 	private Coords playerPosition;
-	private ArrayList<Coords> boxes;
+	private HashSet<Coords> boxes;
 	
 	public Surf (int longestRow, String[] rows){
 		goals = new ArrayList<Coords> ();
@@ -44,68 +46,69 @@ public class Surf implements Board{
 
 	@Override
 	public void movePlayer(Direction dir) {
-		int newX = 0; int newY = 0;
+		int xMod = 0; int yMod = 0;
 		switch (dir){
 		case UP: 
-			newX = playerPosition.getX();
-			newY = playerPosition.getY()-1;
+			yMod = -1;
 			break;
 		case DOWN: 
-			newX = playerPosition.getX();
-			newY = playerPosition.getY()+1;
+			yMod = 1;
 			break;
 		case LEFT: 
-			newX = playerPosition.getX()-1;
-			newY = playerPosition.getY();
+			xMod = -1;
 			break;
 		case RIGHT: 
-			newX = playerPosition.getX()+1;
-			newY = playerPosition.getY();
+			xMod = 1;
 			break;
 		}
-		Coords newPos = new Coords (newX, newY);
+		Coords newPos = new Coords (playerPosition.getX()+xMod, playerPosition.getY()+yMod);
 		boolean emptyPosition = isTileWalkable (newPos);
 		if (emptyPosition){
-			doMove (dir);
+			doMove (newPos);
 		}
 		boolean boxPosition = isTileBox (newPos.getX(), newPos.getY());
 		if (boxPosition){
-			doBoxMove (dir);
-		}
-		boolean boxGoalPosition = isTileBoxGoal (newPos.getX(), newPos.getY());
-		if (boxGoalPosition){
-			doGoal (dir, newPos);
+			Coords nextTile = new Coords (newPos.getX()+xMod, newPos.getY()+yMod);
+			boolean nextTileGoal = isTileGoal (nextTile.getX(), nextTile.getY());
+			if (nextTileGoal && isTileWalkable (nextTile))
+				doGoal (newPos);
+			else if (isTileWalkable (nextTile))
+				doBoxMove (newPos, nextTile);
 		}
 		
 		
 	}
 	
-	private void doGoal(Direction dir, Coords goalPos) {
-		removeBoxFromList (goalPos);
+	private void doGoal(Coords boxPos) {
+		boxes.remove(boxPos);
 		//Update matrix
 		boardMatrix[playerPosition.getX()][playerPosition.getY()] = empty;
-		boardMatrix[goalPos.getX()][goalPos.getY()] = playerGoal;
-		playerPosition = goalPos;
+		boardMatrix[boxPos.getX()][boxPos.getY()] = player;
+		playerPosition = boxPos;
 		
 	}
 
-	private void removeBoxFromList(Coords goalPos) {
-		for (Coords c : boxes){
-			if (c.equals(goalPos)){
-				boxes.remove(c);
-				break;
-			}
-		}
+	private void updateBox(Coords from, Coords to) {
+		boxes.remove(from);
+		boxes.add(to);
+		
 	}
+	
 
-	private boolean isTileBoxGoal(int x, int i) {
-		// TODO Auto-generated method stub
+	private boolean isTileGoal(int x, int y) {
+		if (boardMatrix[x][y] == goal)
+			return true;
 		return false;
 	}
 
-	private void doBoxMove(Direction dir) {
-		// TODO Auto-generated method stub
+	private void doBoxMove(Coords boxPos, Coords moveTo) {
+		boardMatrix[playerPosition.getX()][playerPosition.getY()] = empty;
+		boardMatrix[boxPos.getX()][boxPos.getY()] = player;
+		boardMatrix[moveTo.getX()][moveTo.getY()] = box;
 		
+		playerPosition = boxPos;
+		
+		updateBox (boxPos, moveTo);
 	}
 
 	private boolean isTileBox (int x, int y){
@@ -114,7 +117,7 @@ public class Surf implements Board{
 		return false;
 	}
 
-	private void doMove(Direction dir) {
+	private void doMove(Coords newPos) {
 		
 	}
 
