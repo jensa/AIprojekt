@@ -19,5 +19,7 @@ public interface Board {
 	
 	public Coords[] getBoxes ();
 	
+	public void printMap ();
+	
 
 }
