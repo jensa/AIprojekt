@@ -126,17 +126,13 @@ public class Surf implements Board{
 	}
 
 	@Override
-	public char getTileAt(int x, int y) {
-		return boardMatrix[x][y];
-	}
-	
-	private boolean isTileWalkable(Coords co) {
-		return isTileWalkable (co.getX(), co.getY());
+	public char getTileAt(Coords c) {
+		return boardMatrix[c.x][c.y];
 	}
 
 	@Override
-	public boolean isTileWalkable(int x, int y) {
-		if (boardMatrix[x][y] == empty || boardMatrix[x][y] == goal)
+	public boolean isTileWalkable(Coords c) {
+		if (boardMatrix[c.x][c.y] == empty || boardMatrix[c.x][c.y] == goal)
 			return true;
 		return false;
 	}
