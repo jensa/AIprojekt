@@ -22,6 +22,7 @@ public class Surf implements Board{
 	private HashSet<Coords> boxes;
 	
 	public Surf (int longestRow, String[] rows){
+		boxes = new HashSet<Coords> ();
 		goals = new ArrayList<Coords> ();
 		height = rows.length;
 		length = longestRow;
@@ -37,9 +38,13 @@ public class Surf implements Board{
 			boardMatrix[i][rowNum] = currentTile;
 			if (currentTile == player)
 				playerPosition = new Coords (i, rowNum);
-			if (currentTile == goal){
+			if (currentTile == goal)
 				goals.add(new Coords (i, rowNum));
-			}
+			if (currentTile == box)
+				boxes.add(new Coords (i, rowNum));
+			if (currentTile == boxGoal)
+				boardMatrix[i][rowNum] = goal;
+			
 		}
 	}
 
@@ -79,13 +84,23 @@ public class Surf implements Board{
 	}
 	
 	private void doMove(Coords newPos) {
-		boardMatrix[playerPosition.getX()][playerPosition.getY()] = empty;
-		boardMatrix[newPos.getX()][newPos.getY()] = player;
+		if (isTileGoal (newPos.getX(), newPos.getY()))
+			boardMatrix[newPos.getX()][newPos.getY()] = playerGoal;
+		else
+			boardMatrix[newPos.getX()][newPos.getY()] = player;
+		if (isTilePlayerGoal (playerPosition.getX(), playerPosition.getY()))
+			boardMatrix[playerPosition.getX()][playerPosition.getY()] = goal;
+		else
+			boardMatrix[playerPosition.getX()][playerPosition.getY()] = empty;
+		
 		playerPosition = newPos;
 	}
 	
 	private void doBoxMove(Coords boxPos, Coords moveTo) {
-		boardMatrix[playerPosition.getX()][playerPosition.getY()] = empty;
+		if (isTilePlayerGoal (playerPosition.getX(), playerPosition.getY()))
+			boardMatrix[playerPosition.getX()][playerPosition.getY()] = goal;
+		else
+			boardMatrix[playerPosition.getX()][playerPosition.getY()] = empty;
 		boardMatrix[boxPos.getX()][boxPos.getY()] = player;
 		boardMatrix[moveTo.getX()][moveTo.getY()] = box;
 		
@@ -100,7 +115,6 @@ public class Surf implements Board{
 		boardMatrix[playerPosition.getX()][playerPosition.getY()] = empty;
 		boardMatrix[boxPos.getX()][boxPos.getY()] = player;
 		playerPosition = boxPos;
-		
 	}
 
 	private void updateBox(Coords from, Coords to) {
@@ -116,6 +130,12 @@ public class Surf implements Board{
 	
 	private boolean isTileBox (int x, int y){
 		if (boardMatrix[x][y] == box)
+			return true;
+		return false;
+	}
+	
+	private boolean isTilePlayerGoal (int x, int y){
+		if (boardMatrix[x][y] == playerGoal)
 			return true;
 		return false;
 	}
@@ -153,17 +173,21 @@ public class Surf implements Board{
 	}
 	
 	public boolean isSolved (){
-		return solved;
+		return boxes.size() < 1 ? true : false;
 	}
 	
 	public void printMap (){
 		System.out.println("Map");
-		for (int i=0;i<boardMatrix[0].length;i++){
-			for (int j=0;j<boardMatrix[i].length;j++)
-				System.out.print(boardMatrix[i][j]);
+		for (int i=0;i<height;i++){
+			for (int j=0;j<length;j++)
+				System.out.print(boardMatrix[j][i]);
 			System.out.print("\n");
 		}
 		System.out.println("-----------------------");
+	}
+	
+	public char[][] getBackingMatrix (){
+		return boardMatrix;
 	}
 
 }

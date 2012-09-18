@@ -21,5 +21,9 @@ public interface Board {
 	
 	public void printMap ();
 	
+	public char[][] getBackingMatrix ();
+	
+	public boolean isSolved ();
+	
 
 }
