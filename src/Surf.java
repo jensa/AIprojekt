@@ -165,7 +165,7 @@ public class Surf implements Board{
 		System.out.println("Map");
 		for (int i=0;i<height;i++){
 			for (int j=0;j<width;j++)
-				if (new Coords(i,j).equals(this.playerPosition))
+				if (new Coords(j,i).equals(this.playerPosition))
 					System.out.print("@");
 				else
 					System.out.print(boardMatrix[j][i]);
