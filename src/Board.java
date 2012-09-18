@@ -9,9 +9,9 @@ public interface Board {
 	
 	public void movePlayer (Direction dir);
 	
-	public char getTileAt (int x, int y);
+	public char getTileAt (Coords c);
 	
-	public boolean isTileWalkable (int x, int y);
+	public boolean isTileWalkable (Coords c);
 	
 	public Coords[] getGoals ();
 	
