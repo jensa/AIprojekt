@@ -3,8 +3,6 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Stack;
 
-import SokobanBoard.Cell;
-
 public class Bond implements Agent{
 	
 	int[][] counterMap;
@@ -20,11 +18,9 @@ public class Bond implements Agent{
 		boardWidth = board.getWidth ();
 		Coords[] boxes = board.getBoxes();
 		board.printMap();
-		board.movePlayer(Board.Direction.RIGHT);
-		board.printMap();
-		for (int i = 0; i < boxes.length; i++) {
-			System.out.println(boxes[i].toString());
-		}
+		//for (int i = 0; i <1; i++) {
+			System.out.println(findPath (board.getPlayer(), boxes[0]));
+		//}
 		return "YOLO";
 	}
 	
@@ -34,39 +30,68 @@ public class Bond implements Agent{
 		queue.push(from);
 		while (!queue.isEmpty()){
 			Coords c = queue.pop();
-			if (cell.equals(start)){
+			if (c.equals(to))
 				break;
-			}
-			ArrayList<Coords> cells = createAdjacentCells (cell);
+			ArrayList<Coords> cells = createAdjacentCells (c);
 			for (int i=0; i<cells.size();i++){
-				Cell adjacentCell = cells.get(i);
-				boolean lowerCounterExists = counterMap [adjacentCell.x][adjacentCell.y] > 0 && 
-						counterMap [adjacentCell.x][adjacentCell.y] < adjacentCell.counter;
+				Coords adjacentCell = cells.get(i);
+				boolean lowerCounterExists = counterMap [adjacentCell.x][adjacentCell.y] != 0 &&
+						counterMap [adjacentCell.x][adjacentCell.y] < counterMap [c.x][c.y]+1;
 				if (lowerCounterExists){
 					cells.remove(i);
 					i--;
 				}
 				else{
-					counterMap [adjacentCell.x][adjacentCell.y] = adjacentCell.counter;
+					counterMap [adjacentCell.x][adjacentCell.y] = counterMap [c.x][c.y]+1;
 				}
 			}
-			for (Cell c : cells)
-				cellQueue.addFirst(c);
+			for (Coords newCoords : cells)
+				queue.push(newCoords);
 		}
-		return extractPath ();
+		counterMap[from.x][from.y] = 0;
+		printCounter ();
+		return extractPath (to.x, to.y);
+	}
+	
+	private String extractPath(int x,int y) {
+		Coords c = new Coords(x,y);
+		
+		if (counterMap[c.x+1][c.y] == counterMap[c.x][c.y]-1) {
+			return "R"+extractPath(x+1,y);
+		} else if (counterMap[c.x-1][c.y]== counterMap[c.x][c.y]-1) {
+			return "L"+extractPath(x-1,y);
+		} else if (counterMap[c.x][c.y+1] == counterMap[c.x][c.y]-1) {
+			return "U" + extractPath(x,y+1);
+		} else {
+			return "D" + extractPath(x,y-1);
+		}
 	}
 	
 	private ArrayList<Coords> createAdjacentCells(Coords cell) {
 		ArrayList<Coords> cells = new ArrayList<Coords> ();
-		addCell (cell.x-1, cell.y, cell.counter+1, cells);
-		addCell (cell.x+1, cell.y, cell.counter+1, cells);
-		addCell (cell.x, cell.y+1, cell.counter+1, cells);
-		addCell (cell.x, cell.y-1, cell.counter+1, cells);
+		addCell (new Coords (cell.x-1, cell.y), cells);
+		addCell (new Coords (cell.x+1, cell.y), cells);
+		addCell (new Coords (cell.x, cell.y+1), cells);
+		addCell (new Coords (cell.x, cell.y-1), cells);
 		return cells;
 	}
 	
 	private void addCell (Coords c, ArrayList<Coords> cells){
 		if (board.isTileWalkable(c))
+			cells.add(c);
+	}
+	
+	private void printCounter (){
+		for (int i=0;i<boardHeight;i++){
+			for (int j=0;j<boardWidth;j++){
+				if (counterMap[j][i] > 9){
+					System.out.print("["+counterMap[j][i]+"]");
+				}else
+					System.out.print("[0"+counterMap[j][i]+"]");
+				
+			}
+			System.out.print("\n");
+		}
 	}
 	
 	
