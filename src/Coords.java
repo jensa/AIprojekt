@@ -1,8 +1,8 @@
 
 public class Coords {
 	
-	private int x;
-	private int y;
+	public int x;
+	public int y;
 	
 	public Coords (int tx, int ty){
 		x = tx;
