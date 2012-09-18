@@ -64,19 +64,19 @@ public class Bond implements Agent{
 		int nextY = 0;
 		String dir = "";
 		int nextBestScore = 1000;
-		if (counterMap[to.x+1][to.y] > 0 && counterMap[to.x+1][to.y] < nextBestScore) {
+		if (counterMap[to.x+1][to.y] > 0 && counterMap[to.x+1][to.y] < nextBestScore|| (from.x == to.x+1 && from.y == to.y)) {
 			nextX = to.x+1;
 			nextY = to.y;
 			nextBestScore = counterMap[nextX][nextY];
 			dir = "L";
 		}	
-		if (counterMap[to.x-1][to.y] > 0 && counterMap[to.x-1][to.y] < nextBestScore) {
+		if (counterMap[to.x-1][to.y] > 0 && counterMap[to.x-1][to.y] < nextBestScore|| (from.x == to.x-1 && from.y == to.y)) {
 			nextX = to.x-1;
 			nextY = to.y;
 			nextBestScore = counterMap[nextX][nextY];
 			dir = "R";
 		}
-		if (counterMap[to.x][to.y+1] > 0 && counterMap[to.x][to.y+1] < nextBestScore) {
+		if (counterMap[to.x][to.y+1] > 0 && counterMap[to.x][to.y+1] < nextBestScore || (from.x == to.x && from.y == to.y +1)) {
 			nextX = to.x;
 			nextY = to.y+1;
 			nextBestScore = counterMap[nextX][nextY];
