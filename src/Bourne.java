@@ -19,6 +19,7 @@ public class Bourne implements Agent{
     }
 
     public String solve(Board board) {
+	board.printMap();
 	Coords player = board.getPlayer();
 	Coords[] boxes = board.getBoxes();
 	Path pathToBox = bfs(player, boxes[0], board);
@@ -47,25 +48,25 @@ public class Bourne implements Agent{
 	Path cc = new Path(null,start);
 	Coords nc = new Coords(cc.x,cc.y);
 	q.push(cc);
-
+	visited.add(nc);
 	while (!q.isEmpty()) {
-	    if (cc.equals(goal)) {
+	    if (cc.equalsCoords(goal)) {
 		return cc;
 	    }
 
 	    nc = new Coords(cc.x-1,cc.y);
-	    q.push(new Path(cc, nc));
+	    if (board.isTileWalkable(nc)) q.push(new Path(cc, nc));
 	    nc = new Coords(cc.x, cc.y-1);
-	    q.push(new Path(cc, nc));
+	    if (board.isTileWalkable(nc)) q.push(new Path(cc, nc));
 	    nc = new Coords(cc.x+1,cc.y);
-	    q.push(new Path(cc, nc));
+	    if (board.isTileWalkable(nc)) q.push(new Path(cc, nc));
 	    nc = new Coords(cc.x, cc.y+1);
-	    q.push(new Path(cc, nc));
+	    if (board.isTileWalkable(nc)) q.push(new Path(cc, nc));
 
 	    pc = cc;
 	    cc = q.pop();
 	    nc = new Coords(cc.x,cc.y);
-	    while (! board.isTileWalkable(nc)) {
+	    while (! board.isTileWalkable(nc) || visited.contains(nc)) {
 		cc = q.pop();
 		nc = new Coords(cc.x,cc.y);
 	    }
@@ -84,6 +85,11 @@ public class Bourne implements Agent{
 	    this.parent = parent;
 	    this.x = c.x;
 	    this.y = c.y;
+	}
+
+	public boolean equalsCoords(Coords c) {
+	    if (c.x == x && c.y == y) return true;
+	    return false;
 	}
 	
 	public String getPath() {
