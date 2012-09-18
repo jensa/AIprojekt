@@ -6,7 +6,7 @@ public class Surf implements Board{
 	
 	private boolean solved;
 	final int height;
-	final int length;
+	final int width;
 	
 	final int wall = 0x23;
 	public static final char player = 0x40;
@@ -25,8 +25,8 @@ public class Surf implements Board{
 		boxes = new HashSet<Coords> ();
 		goals = new ArrayList<Coords> ();
 		height = rows.length;
-		length = longestRow;
-		boardMatrix = new char[length][height];
+		width = longestRow;
+		boardMatrix = new char[width][height];
 		boxes = new HashSet<Coords>();
 		
 		for (int i=0;i<rows.length;i++){
@@ -168,7 +168,7 @@ public class Surf implements Board{
 	public void printMap (){
 		System.out.println("Map");
 		for (int i=0;i<height;i++){
-			for (int j=0;j<length;j++)
+			for (int j=0;j<width;j++)
 				System.out.print(boardMatrix[j][i]);
 			System.out.print("\n");
 		}
@@ -177,6 +177,17 @@ public class Surf implements Board{
 	
 	public char[][] getBackingMatrix (){
 		return boardMatrix;
+	}
+
+	@Override
+	public int getHeight() {
+		return height;
+	}
+
+	@Override
+	public int getWidth() {
+		// TODO Auto-generated method stub
+		return width;
 	}
 
 }

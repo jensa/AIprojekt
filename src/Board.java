@@ -24,6 +24,10 @@ public interface Board {
 	public char[][] getBackingMatrix();
 	
 	public boolean isSolved ();
+
+	public int getHeight();
+
+	public int getWidth();
 	
 
 }
