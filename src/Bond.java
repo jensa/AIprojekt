@@ -5,6 +5,7 @@ import java.util.Stack;
 
 public class Bond implements Agent{
 	
+	private static final boolean DEBUG = false;
 	int[][] counterMap;
 	int boardWidth;
 	int boardHeight;
@@ -17,13 +18,82 @@ public class Bond implements Agent{
 		boardHeight = board.getHeight ();
 		boardWidth = board.getWidth ();
 		Coords[] boxes = board.getBoxes();
+		
 		board.printMap();
+		/**
+		board.movePlayer(Board.Direction.DOWN);
+		
+		board.printMap();
+		
+		board.movePlayer(Board.Direction.DOWN);
+		
+		System.out.println("player: " + board.getPlayer().x + " " + board.getPlayer().y);
+		
+		board.printMap();
+		
+		board.movePlayer(Board.Direction.DOWN);
+		
+		System.out.println("player: " + board.getPlayer().x + " " + board.getPlayer().y);
+		
+		board.printMap();
+		board.movePlayer(Board.Direction.RIGHT);
+		
+		System.out.println("player: " + board.getPlayer().x + " " + board.getPlayer().y);
+		
+		board.printMap();
+		*/
+		
+		moveBox(board.getPlayer(), new Coords(2,4), new Coords(3,4));
+		
+		board.printMap();
+		//moveBox(new Coords(9,6));
+		
 		//for (int i = 0; i <1; i++) {
-			System.out.println(findPath (board.getPlayer(), boxes[0]));
+		System.out.println(findPath (board.getPlayer(), boxes[0]));
 		//}
 		return "YOLO";
 	}
 	
+	private void moveBox(Coords player, Coords from, Coords to) {
+		
+		ArrayList<Coords> adjacentCoords = walkableAdjacentCells(from);
+		System.out.println("walkable size: " + adjacentCoords.size());
+		for (int i = 0; i < adjacentCoords.size(); i++) {
+			//System.out.println("adjacent coords: " + adjacentCoords.get(i).x + " " + adjacentCoords.get(i).y);
+			String pathToACellNextToFrom = findPath(player, adjacentCoords.get(i));
+			//System.out.println("Path: " + pathToACellNextToFrom);
+			if (pathToACellNextToFrom != null) {
+				//vi kan gå till rutan brevid
+				board.getPlayer().x = adjacentCoords.get(i).x;
+				board.getPlayer().y = adjacentCoords.get(i).y;
+				board.printMap();
+				board.movePlayer(getDirection(adjacentCoords.get(i), from));
+				board.printMap();
+				break;
+			} else {
+				// spelaren kan inte gå hit.
+			}
+		}
+	}
+
+	private Board.Direction getDirection(Coords from, Coords to) {
+		// de måste vara en ifrån
+		if (from.x + 1 == to.x && from.y == to.y) {
+			return Board.Direction.RIGHT;
+		}
+		if (from.x - 1 == to.x && from.y == to.y) {
+			return Board.Direction.LEFT;
+		}
+		if (from.x == to.x && from.y - 1 == to.y) {
+			return Board.Direction.DOWN;
+		}
+		if (from.x == to.x && from.y + 1 == to.y) {
+			return Board.Direction.UP;
+		}
+		
+		return null; // null == ogiltigt drag.
+	}
+
 	public String findPath (Coords from, Coords to){
 		Stack<Coords> queue = new Stack<Coords> ();
 		counterMap = new int[boardWidth][boardHeight];
@@ -88,9 +158,26 @@ public class Bond implements Agent{
 			nextBestScore = counterMap[nextX][nextY];
 			dir = "D";
 		}
-		return extractPath(from, new Coords(nextX, nextY))+dir;
+		if (dir=="")
+			return null;
+		else
+			return extractPath(from, new Coords(nextX, nextY))+dir;
 	}
 	
+	/**
+	 * Returnera en lista på rutor vi kan stå på.
+	 * @param cell
+	 * @return
+	 */
+	private ArrayList<Coords> walkableAdjacentCells(Coords cell) {
+		ArrayList<Coords> list = createAdjacentCells( cell);
+		for (int i = 0; i < list.size(); i++) {
+			if (!board.isTileWalkable(list.get(i))) {
+				list.remove(i);
+			}
+		}
+		return list;
+	}
 	private ArrayList<Coords> createAdjacentCells(Coords cell) {
 		ArrayList<Coords> cells = new ArrayList<Coords> ();
 		addCell (new Coords (cell.x-1, cell.y), cells);
@@ -106,16 +193,17 @@ public class Bond implements Agent{
 	}
 	
 	private void printCounter (){
-		for (int i=0;i<boardHeight;i++){
-			for (int j=0;j<boardWidth;j++){
-				if (counterMap[j][i] > 9 || counterMap[j][i] < 0){
-					System.out.print("["+counterMap[j][i]+"]");
-				}else
-					System.out.print("[0"+counterMap[j][i]+"]");
-				
+		if (DEBUG)
+			for (int i=0;i<boardHeight;i++){
+				for (int j=0;j<boardWidth;j++){
+					if (counterMap[j][i] > 9 || counterMap[j][i] < 0){
+						System.out.print("["+counterMap[j][i]+"]");
+					}else
+						System.out.print("[0"+counterMap[j][i]+"]");
+					
+				}
+				System.out.print("\n");
 			}
-			System.out.print("\n");
-		}
 	}
 	
 	

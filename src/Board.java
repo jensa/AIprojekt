@@ -28,6 +28,4 @@ public interface Board {
 	public int getHeight();
 
 	public int getWidth();
-	
-
 }
