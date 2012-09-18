@@ -49,22 +49,46 @@ public class Bond implements Agent{
 				queue.push(newCoords);
 		}
 		counterMap[from.x][from.y] = 0;
+		counterMap[to.x][to.y] = -1;
 		printCounter ();
-		return extractPath (to.x, to.y);
+		System.out.println("to, x: " + to.x + " y: " + to.y);
+		return extractPath (from, to);
 	}
 	
-	private String extractPath(int x,int y) {
-		Coords c = new Coords(x,y);
-		
-		if (counterMap[c.x+1][c.y] == counterMap[c.x][c.y]-1) {
-			return "R"+extractPath(x+1,y);
-		} else if (counterMap[c.x-1][c.y]== counterMap[c.x][c.y]-1) {
-			return "L"+extractPath(x-1,y);
-		} else if (counterMap[c.x][c.y+1] == counterMap[c.x][c.y]-1) {
-			return "U" + extractPath(x,y+1);
-		} else {
-			return "D" + extractPath(x,y-1);
+	private String extractPath(Coords from, Coords to) {
+		if (to.x == from.x && to.y == from.y) {
+			return "";
 		}
+		int scoreOfCurrentCoord = counterMap[to.x][to.y];
+		int nextX = to.x;
+		int nextY = 0;
+		String dir = "";
+		int nextBestScore = 1000;
+		if (counterMap[to.x+1][to.y] > 0 && counterMap[to.x+1][to.y] < nextBestScore) {
+			nextX = to.x+1;
+			nextY = to.y;
+			nextBestScore = counterMap[nextX][nextY];
+			dir = "L";
+		}	
+		if (counterMap[to.x-1][to.y] > 0 && counterMap[to.x-1][to.y] < nextBestScore) {
+			nextX = to.x-1;
+			nextY = to.y;
+			nextBestScore = counterMap[nextX][nextY];
+			dir = "R";
+		}
+		if (counterMap[to.x][to.y+1] > 0 && counterMap[to.x][to.y+1] < nextBestScore) {
+			nextX = to.x;
+			nextY = to.y+1;
+			nextBestScore = counterMap[nextX][nextY];
+			dir = "U";
+		}
+		if (counterMap[to.x][to.y-1] > 0 && counterMap[to.x][to.y-1] < nextBestScore || (from.x == to.x && from.y == to.y -1)) {
+			nextX = to.x;
+			nextY = to.y-1;
+			nextBestScore = counterMap[nextX][nextY];
+			dir = "D";
+		}
+		return extractPath(from, new Coords(nextX, nextY))+dir;
 	}
 	
 	private ArrayList<Coords> createAdjacentCells(Coords cell) {
@@ -84,7 +108,7 @@ public class Bond implements Agent{
 	private void printCounter (){
 		for (int i=0;i<boardHeight;i++){
 			for (int j=0;j<boardWidth;j++){
-				if (counterMap[j][i] > 9){
+				if (counterMap[j][i] > 9 || counterMap[j][i] < 0){
 					System.out.print("["+counterMap[j][i]+"]");
 				}else
 					System.out.print("[0"+counterMap[j][i]+"]");
