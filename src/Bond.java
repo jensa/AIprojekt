@@ -9,11 +9,12 @@ public class Bond implements Agent{
 	int[][] counterMap;
 	int boardWidth;
 	int boardHeight;
-	Board board;
+	Queue<Board> states = new LinkedList<Board>();
+	
 
 	@Override
-	public String solve(Board board) {
-		this.board = board;
+	public String solve(Board solveBoard) {
+		Board board = solveBoard;
 		System.out.println("solve");
 		boardHeight = board.getHeight ();
 		boardWidth = board.getWidth ();
@@ -43,38 +44,50 @@ public class Bond implements Agent{
 		board.printMap();
 		*/
 		
-		moveBox(board.getPlayer(), new Coords(2,4), new Coords(3,4));
+		System.out.println("original");
+		board.printMap();
+		moveBox(board.getPlayer(), new Coords(8,8), new Coords(8,9), board);
+		//moveBox(board.getPlayer(), new Coords(7,9), new Coords(8,9));
 		
 		board.printMap();
 		//moveBox(new Coords(9,6));
 		
 		//for (int i = 0; i <1; i++) {
-		System.out.println(findPath (board.getPlayer(), boxes[0]));
+		System.out.println(findPath (board.getPlayer(), boxes[0], board));
 		//}
 		return "YOLO";
 	}
 	
-	private void moveBox(Coords player, Coords from, Coords to) {
-		
-		ArrayList<Coords> adjacentCoords = walkableAdjacentCells(from);
+	private void moveBox(Coords player, Coords from, Coords to, Board board) {
+		ArrayList<Coords> adjacentCoords = walkableAdjacentCells(from, board);
 		System.out.println("walkable size: " + adjacentCoords.size());
 		for (int i = 0; i < adjacentCoords.size(); i++) {
 			//System.out.println("adjacent coords: " + adjacentCoords.get(i).x + " " + adjacentCoords.get(i).y);
-			String pathToACellNextToFrom = findPath(player, adjacentCoords.get(i));
+			String pathToACellNextToFrom = findPath(player, adjacentCoords.get(i), board);
 			//System.out.println("Path: " + pathToACellNextToFrom);
 			if (pathToACellNextToFrom != null) {
 				//vi kan gå till rutan brevid
-				board.getPlayer().x = adjacentCoords.get(i).x;
-				board.getPlayer().y = adjacentCoords.get(i).y;
+				Board newBoard = board.clone();
+				newBoard.getPlayer().x = adjacentCoords.get(i).x;
+				newBoard.getPlayer().y = adjacentCoords.get(i).y;
+				newBoard.printMap();
+				Board.Direction dir = getDirection(adjacentCoords.get(i), from);
+				newBoard.movePlayer(dir);
+				
+				newBoard.printMap();
+				states.add(newBoard);
+				System.out.println("original");
 				board.printMap();
-				board.movePlayer(getDirection(adjacentCoords.get(i), from));
-				board.printMap();
-				break;
 			} else {
 				// spelaren kan inte gå hit.
 			}
 		}
 	}
+
+	private boolean deadLock(Board board) {
+		return false;
+	}
+	
 
 	private Board.Direction getDirection(Coords from, Coords to) {
 		// de måste vara en ifrån
@@ -84,17 +97,17 @@ public class Bond implements Agent{
 		if (from.x - 1 == to.x && from.y == to.y) {
 			return Board.Direction.LEFT;
 		}
-		if (from.x == to.x && from.y - 1 == to.y) {
+		if (from.x == to.x && from.y + 1 == to.y) {
 			return Board.Direction.DOWN;
 		}
-		if (from.x == to.x && from.y + 1 == to.y) {
+		if (from.x == to.x && from.y - 1 == to.y) {
 			return Board.Direction.UP;
 		}
 		
 		return null; // null == ogiltigt drag.
 	}
 
-	public String findPath (Coords from, Coords to){
+	public String findPath (Coords from, Coords to, Board board){
 		Stack<Coords> queue = new Stack<Coords> ();
 		counterMap = new int[boardWidth][boardHeight];
 		queue.push(from);
@@ -102,7 +115,7 @@ public class Bond implements Agent{
 			Coords c = queue.pop();
 			if (c.equals(to))
 				break;
-			ArrayList<Coords> cells = createAdjacentCells (c);
+			ArrayList<Coords> cells = createAdjacentCells (c, board);
 			for (int i=0; i<cells.size();i++){
 				Coords adjacentCell = cells.get(i);
 				boolean lowerCounterExists = counterMap [adjacentCell.x][adjacentCell.y] != 0 &&
@@ -169,8 +182,8 @@ public class Bond implements Agent{
 	 * @param cell
 	 * @return
 	 */
-	private ArrayList<Coords> walkableAdjacentCells(Coords cell) {
-		ArrayList<Coords> list = createAdjacentCells( cell);
+	private ArrayList<Coords> walkableAdjacentCells(Coords cell, Board board) {
+		ArrayList<Coords> list = createAdjacentCells( cell, board);
 		for (int i = 0; i < list.size(); i++) {
 			if (!board.isTileWalkable(list.get(i))) {
 				list.remove(i);
@@ -178,16 +191,16 @@ public class Bond implements Agent{
 		}
 		return list;
 	}
-	private ArrayList<Coords> createAdjacentCells(Coords cell) {
+	private ArrayList<Coords> createAdjacentCells(Coords cell, Board board) {
 		ArrayList<Coords> cells = new ArrayList<Coords> ();
-		addCell (new Coords (cell.x-1, cell.y), cells);
-		addCell (new Coords (cell.x+1, cell.y), cells);
-		addCell (new Coords (cell.x, cell.y+1), cells);
-		addCell (new Coords (cell.x, cell.y-1), cells);
+		addCell (new Coords (cell.x-1, cell.y), cells, board);
+		addCell (new Coords (cell.x+1, cell.y), cells, board);
+		addCell (new Coords (cell.x, cell.y+1), cells, board);
+		addCell (new Coords (cell.x, cell.y-1), cells, board);
 		return cells;
 	}
 	
-	private void addCell (Coords c, ArrayList<Coords> cells){
+	private void addCell (Coords c, ArrayList<Coords> cells, Board board){
 		if (board.isTileWalkable(c))
 			cells.add(c);
 	}

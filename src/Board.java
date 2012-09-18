@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.HashSet;
 
 
 public interface Board {
@@ -7,6 +8,8 @@ public interface Board {
 		UP,DOWN,LEFT,RIGHT
 	}
 	
+	public Board clone();
+		
 	public void movePlayer (Direction dir);
 	
 	public char getTileAt (Coords c);
@@ -28,4 +31,10 @@ public interface Board {
 	public int getHeight();
 
 	public int getWidth();
+
+	public HashSet<Coords> getBoxHash();
+	
+	public ArrayList<Coords> getGoalsList();
+	
+	public Coords nextCoordInDirection(Direction dir, Coords from);
 }

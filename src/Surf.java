@@ -16,10 +16,10 @@ public class Surf implements Board{
 	public static final char goal = 0x2e;
 	public static final char empty = 0x20;
 	
-	private char[][] boardMatrix;
-	private ArrayList<Coords> goals;
-	private Coords playerPosition;
-	private HashSet<Coords> boxes;
+	public char[][] boardMatrix;
+	public ArrayList<Coords> goals;
+	public Coords playerPosition;
+	public HashSet<Coords> boxes;
 	
 	public Surf (int longestRow, String[] rows){
 		boxes = new HashSet<Coords> ();
@@ -32,6 +32,31 @@ public class Surf implements Board{
 		for (int i=0;i<rows.length;i++){
 			addRow (rows[i], i);
 		}
+	}
+	
+	public Surf(Board b) {
+		goals = (ArrayList<Coords>) b.getGoalsList().clone();
+		boxes = (HashSet<Coords>) b.getBoxHash().clone();
+		width = b.getWidth();
+		height = b.getHeight();
+		boardMatrix = new char[width][height];
+		for (int i = 0; i < this.width; i++) {
+			for (int j = 0; j < this.height; j++) {
+				this.boardMatrix[i][j] = b.getBackingMatrix()[i][j];
+			}
+		}
+		this.playerPosition = new Coords(b.getPlayer().x, b.getPlayer().y);
+	}
+
+	@Override
+	public Board clone() {
+		try {
+			Board newBoard = new Surf(this);
+			return newBoard;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	private void addRow (String row, int rowNum){
@@ -55,6 +80,26 @@ public class Surf implements Board{
 			}
 		}
 	}
+	
+	public Coords nextCoordInDirection(Direction dir, Coords from) {
+		int xMod = 0; int yMod = 0;
+		switch (dir){
+			case UP:
+				yMod = -1;
+				break;
+			case DOWN:
+				yMod = 1;
+				break;
+			case LEFT:
+				xMod = -1;
+				break;
+			case RIGHT:
+				xMod = 1;
+				break;
+		}
+		return new Coords(from.x + xMod, from.y + yMod);
+	}
+	
 	
 	@Override
 	public void movePlayer(Direction dir) {
@@ -189,4 +234,12 @@ public class Surf implements Board{
 		return width;
 	}
 
+	public HashSet<Coords> getBoxHash() {
+		return boxes;
+	}
+
+	@Override
+	public ArrayList<Coords> getGoalsList() {
+		return this.goals;
+	}
 }
