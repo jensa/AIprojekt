@@ -10,6 +10,7 @@ public class Bond implements Agent{
 	int boardWidth;
 	int boardHeight;
 	Queue<Board> states = new LinkedList<Board>();
+	private boolean[][] bipartite;
 	
 
 	@Override
@@ -19,6 +20,8 @@ public class Bond implements Agent{
 		boardHeight = board.getHeight ();
 		boardWidth = board.getWidth ();
 		Coords[] boxes = board.getBoxes();
+		
+		calculateBipartiteDeadLocks();
 		
 		board.printMap();
 		/**
@@ -46,7 +49,15 @@ public class Bond implements Agent{
 		
 		System.out.println("original");
 		board.printMap();
-		moveBox(board.getPlayer(), new Coords(8,8), new Coords(8,9), board);
+		states.add(board);
+		while (!states.isEmpty()) {
+			Board state = states.poll();
+			if (!isDeadLock(state)) {
+				for (Coords c : boxes) {
+					moveBox(state.getPlayer(), new Coords(8,8), state);
+				}
+			}
+		}
 		//moveBox(board.getPlayer(), new Coords(7,9), new Coords(8,9));
 		
 		board.printMap();
@@ -56,6 +67,41 @@ public class Bond implements Agent{
 		System.out.println(findPath (board.getPlayer(), boxes[0], board));
 		//}
 		return "YOLO";
+	}
+	
+	private void calculateBipartiteDeadLocks() {
+		bipartite = new boolean[boardHeight][boardWidth];
+		bipartite[1][1] = true;
+		bipartite[1][2] = true;
+		bipartite[1][3] = true;
+		bipartite[1][4] = true;
+		bipartite[2][3] = true;
+		bipartite[1][5] = true;
+		for (int i = 0; i < boardHeight; i++) {
+			for (int j = 0; j < boardWidth; j++) {
+				if (bipartite[j][i]) {
+					System.out.print("[x]");
+				} else {
+					System.out.print("[ ]");
+				}
+				
+			}
+			System.out.println("");
+		}
+	}
+
+	public boolean isDeadLock(Board b) {
+		return bipartiteDeadLock(b);
+	}
+	
+	private boolean bipartiteDeadLock(Board b) {
+		return true;
+	}
+	private void moveBox(Coords player, Coords from, Board board) {
+		moveBox(player, from, board.nextCoordInDirection(Board.Direction.UP, from), board);
+		moveBox(player, from, board.nextCoordInDirection(Board.Direction.DOWN, from), board);
+		moveBox(player, from, board.nextCoordInDirection(Board.Direction.LEFT, from), board);
+		moveBox(player, from, board.nextCoordInDirection(Board.Direction.RIGHT, from), board);
 	}
 	
 	private void moveBox(Coords player, Coords from, Coords to, Board board) {
