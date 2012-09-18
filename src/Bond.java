@@ -71,12 +71,21 @@ public class Bond implements Agent{
 	
 	private void calculateBipartiteDeadLocks() {
 		bipartite = new boolean[boardHeight][boardWidth];
+		
 		bipartite[1][1] = true;
 		bipartite[1][2] = true;
 		bipartite[1][3] = true;
 		bipartite[1][4] = true;
-		bipartite[2][3] = true;
-		bipartite[1][5] = true;
+		bipartite[3][3] = true;
+		bipartite[2][5] = true;
+		bipartite[3][6] = true;
+		bipartite[4][7] = true;
+		bipartite[4][4] = true;
+		bipartite[5][5] = true;
+		bipartite[10][6] = true;
+		bipartite[10][10] = true;
+		bipartite[5][10] = true;
+		
 		for (int i = 0; i < boardHeight; i++) {
 			for (int j = 0; j < boardWidth; j++) {
 				if (bipartite[j][i]) {
@@ -84,7 +93,6 @@ public class Bond implements Agent{
 				} else {
 					System.out.print("[ ]");
 				}
-				
 			}
 			System.out.println("");
 		}
