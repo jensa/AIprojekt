@@ -23,5 +23,7 @@ public interface Board {
 
 	public char[][] getBackingMatrix();
 	
+	public boolean isSolved ();
+	
 
 }
