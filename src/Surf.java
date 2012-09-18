@@ -9,12 +9,12 @@ public class Surf implements Board{
 	final int length;
 	
 	final int wall = 0x23;
-	final int player = 0x40;
-	final int playerGoal = 0x2b;
+	public static final char player = 0x40;
+	public static final char playerGoal = 0x2b;
 	final int box = 0x24;
 	final int boxGoal = 0x2a;
-	final int goal = 0x2e;
-	final int empty = 0x20;
+	public static final char goal = 0x2e;
+	public static final char empty = 0x20;
 	
 	private char[][] boardMatrix;
 	private ArrayList<Coords> goals;
@@ -38,8 +38,16 @@ public class Surf implements Board{
 		for (int i=0;i<row.length();i++){
 			char currentTile = row.charAt(i);
 			boardMatrix[i][rowNum] = currentTile;
-			if (currentTile == player)
+			if (currentTile == playerGoal){
 				playerPosition = new Coords (i, rowNum);
+				boardMatrix[i][rowNum] = goal;
+				currentTile = goal;
+			}
+			if (currentTile == player){
+				playerPosition = new Coords (i, rowNum);
+				boardMatrix[i][rowNum] = empty;
+				currentTile = empty;
+			}
 			if (currentTile == goal || currentTile == boxGoal){
 				goals.add(new Coords (i, rowNum));
 			if (currentTile == box || currentTile == boxGoal);
@@ -70,49 +78,28 @@ public class Surf implements Board{
 		if (emptyPosition){
 			doMove (newPos);
 		}
-		boolean boxPosition = isTileBox (newPos.getX(), newPos.getY());
-		if (boxPosition){
+		if (isTileBox (newPos)){
 			Coords nextTile = new Coords (newPos.getX()+xMod, newPos.getY()+yMod);
-			boolean nextTileGoal = isTileGoal (nextTile.getX(), nextTile.getY());
-			if (nextTileGoal && isTileWalkable (nextTile))
-				doGoal (newPos);
-			else if (isTileWalkable (nextTile))
+			if (isTileWalkable (nextTile) )
 				doBoxMove (newPos, nextTile);
 		}
 	}
 	
 	private void doMove(Coords newPos) {
-		if (isTileGoal (newPos.getX(), newPos.getY()))
-			boardMatrix[newPos.getX()][newPos.getY()] = playerGoal;
-		else
-			boardMatrix[newPos.getX()][newPos.getY()] = player;
-		if (isTilePlayerGoal (playerPosition.getX(), playerPosition.getY()))
-			boardMatrix[playerPosition.getX()][playerPosition.getY()] = goal;
-		else
-			boardMatrix[playerPosition.getX()][playerPosition.getY()] = empty;
-		
 		playerPosition = newPos;
 	}
 	
 	private void doBoxMove(Coords boxPos, Coords moveTo) {
-		if (isTilePlayerGoal (playerPosition.getX(), playerPosition.getY()))
-			boardMatrix[playerPosition.getX()][playerPosition.getY()] = goal;
+		if (isTileGoal (boxPos))
+			boardMatrix[boxPos.getX()][boxPos.getY()] = goal;
 		else
-			boardMatrix[playerPosition.getX()][playerPosition.getY()] = empty;
-		boardMatrix[boxPos.getX()][boxPos.getY()] = player;
-		boardMatrix[moveTo.getX()][moveTo.getY()] = box;
-		
+			boardMatrix[boxPos.getX()][boxPos.getY()] = empty;
+		if (isTileGoal (moveTo))
+			boardMatrix[moveTo.getX()][moveTo.getY()] = boxGoal;
+		else
+			boardMatrix[moveTo.getX()][moveTo.getY()] = box;
 		playerPosition = boxPos;
-		
 		updateBox (boxPos, moveTo);
-	}
-	
-	private void doGoal(Coords boxPos) {
-		boxes.remove(boxPos);
-		//Update matrix
-		boardMatrix[playerPosition.getX()][playerPosition.getY()] = empty;
-		boardMatrix[boxPos.getX()][boxPos.getY()] = player;
-		playerPosition = boxPos;
 	}
 
 	private void updateBox(Coords from, Coords to) {
@@ -120,20 +107,20 @@ public class Surf implements Board{
 		boxes.add(to);
 	}
 	
-	private boolean isTileGoal(int x, int y) {
-		if (boardMatrix[x][y] == goal)
+	private boolean isTileGoal(Coords c) {
+		if (goals.contains(c))
 			return true;
 		return false;
 	}
 	
-	private boolean isTileBox (int x, int y){
-		if (boardMatrix[x][y] == box)
+	private boolean isTileBox (Coords c){
+		if (boardMatrix[c.getX()][c.getY()] == box | boardMatrix[c.getX ()][c.getY()] == boxGoal)
 			return true;
 		return false;
 	}
 	
-	private boolean isTilePlayerGoal (int x, int y){
-		if (boardMatrix[x][y] == playerGoal)
+	private boolean isTilePlayerGoal (Coords c){
+		if (boardMatrix[c.getX()][c.getY()] == playerGoal)
 			return true;
 		return false;
 	}
@@ -171,7 +158,11 @@ public class Surf implements Board{
 	}
 	
 	public boolean isSolved (){
-		return boxes.size() < 1 ? true : false;
+		for (Coords c : boxes){
+			if ( !goals.contains(c) )
+				return false;
+		}
+		return true;
 	}
 	
 	public void printMap (){

@@ -54,7 +54,7 @@ public class JohnnyEnglish implements Agent{
 //		board.printMap();
 		BoardGFX gfx = new BoardGFX ();
 		gfx.initCanvas();
-		gfx.drawMap(board.getBackingMatrix());
+		gfx.drawMap(board.getBackingMatrix(), board.getPlayer().getX(), board.getPlayer().getY());
 		gfx.addKeyListener(new DirectionListener (board, gfx));
 	}
 
@@ -105,7 +105,7 @@ public class JohnnyEnglish implements Agent{
 			g = canvas.getGraphics();
 		}
 		
-		public void drawMap (char[][] matrix){
+		public void drawMap (char[][] matrix, int pX, int pY){
 			int length = matrix[0].length;
 			int height = matrix.length;
 			int cellHeight = 15;
@@ -113,6 +113,12 @@ public class JohnnyEnglish implements Agent{
 			for (int i=0;i<height;i++){
 				char[] row = new char[height];
 				for (int j=0;j<row.length;j++){
+					if (j == pX && i == pY){
+						if (matrix[j][i] == Surf.goal)
+							drawChar (Surf.playerGoal, j*cellSize, i*cellSize);
+						else
+							drawChar (Surf.player, j*cellSize, i*cellSize);
+					}
 					drawChar (matrix[j][i], j*cellSize, i*cellSize);
 				}
 				g.drawChars(row, 0, height, 50, baseLine);
@@ -218,7 +224,7 @@ public class JohnnyEnglish implements Agent{
 			if (direction != null)
 				b.movePlayer(direction);
 			g.clear();
-			g.drawMap(b.getBackingMatrix());
+			g.drawMap(b.getBackingMatrix(), b.getPlayer().getX(), b.getPlayer().getY());
 		}
 
 		@Override
