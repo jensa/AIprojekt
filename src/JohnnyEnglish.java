@@ -58,7 +58,7 @@ public class JohnnyEnglish implements Agent{
 		gfx.addKeyListener(new DirectionListener (board, gfx));
 	}
 
-	private ArrayList<Board> readMapFile (String path) throws IOException{
+	public static ArrayList<Board> readMapFile (String path) throws IOException{
 		ArrayList<Board> boards = new ArrayList<Board> ();
 		ArrayList<String> mapRows = new ArrayList<String> ();
 		BufferedReader in = new BufferedReader (new FileReader (new File (path)));
