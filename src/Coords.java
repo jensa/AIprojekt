@@ -17,6 +17,10 @@ public class Coords {
 		return y;
 	}
 	
+	@Override public String toString() {
+		return ("coords: " + getX() + " " + getY() );
+	}
+	
 	@Override
 	public boolean equals (Object o){
 		boolean isEqual = false;

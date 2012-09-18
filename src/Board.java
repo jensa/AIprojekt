@@ -20,6 +20,8 @@ public interface Board {
 	public Coords[] getBoxes ();
 	
 	public void printMap ();
+
+	public void movePlayerRight();
 	
 
 }

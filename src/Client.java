@@ -42,6 +42,7 @@ public class Client {
 				rows[i] = lLine;
 			}
 			Surf board = new Surf (longestRow, rows);
+			board.printMap();
 			Agent bond = new Bond();
 			//now, we should find a path from the player to any goal
 
