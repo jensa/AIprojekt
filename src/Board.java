@@ -21,7 +21,7 @@ public interface Board {
 	
 	public void printMap ();
 
-	public void movePlayerRight();
+	public char[][] getBackingMatrix();
 	
 
 }

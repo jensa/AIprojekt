@@ -46,10 +46,6 @@ public class Surf implements Board{
 			}
 		}
 	}
-
-	public void movePlayerRight() {
-		movePlayer(Direction.RIGHT);
-	}
 	
 	@Override
 	public void movePlayer(Direction dir) {
@@ -170,6 +166,11 @@ public class Surf implements Board{
 			System.out.print("\n");
 		}
 		System.out.println("-----------------------");
+	}
+
+	@Override
+	public char[][] getBackingMatrix() {
+		return boardMatrix;
 	}
 
 }
