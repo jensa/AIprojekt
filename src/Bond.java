@@ -10,8 +10,8 @@ public class Bond implements Agent{
 	int[][] counterMap;
 	int boardWidth;
 	int boardHeight;
-	Queue<Board> states = new LinkedList<Board>();
-	HashSet<Double> passedStates = new HashSet<Double>();
+	Stack<Board> states = new Stack<Board>();
+	HashSet<String> passedStates = new HashSet<String>();
 	private boolean[][] bipartite;
 	
 
@@ -22,9 +22,9 @@ public class Bond implements Agent{
 		boardHeight = board.getHeight ();
 		boardWidth = board.getWidth ();
 		
-		calculateBipartiteDeadLocks();
+//		calculateBipartiteDeadLocks();
 		
-		board.printMap();
+//		board.printMap();
 		/**
 		board.movePlayer(Board.Direction.DOWN);
 		
@@ -50,11 +50,11 @@ public class Bond implements Agent{
 		
 		System.out.println("original");
 		board.printMap();
-		states.add(board);
+		states.push(board);
 		while (!states.isEmpty()) {
-			Board state = states.poll();
-			Double hashCode = state.hash();
-			if (!passedStates.contains(hashCode)) {
+			Board state = states.pop();
+			String hashCode = state.hash();
+			if (true){//!passedStates.contains(hashCode)) {
 				if (state.isSolved()) {
 					System.out.println("We did it");
 					state.printMap();
@@ -64,7 +64,8 @@ public class Bond implements Agent{
 					if (!isDeadLock(state)) {
 						//state.printMap();
 						for (Coords c : state.getBoxes()) {
-							moveBox(state,c);
+							for (Board b : moveBox(state,c))
+									states.push(b);
 						}
 					}
 				}
@@ -72,7 +73,7 @@ public class Bond implements Agent{
 		}
 		//moveBox(board.getPlayer(), new Coords(7,9), new Coords(8,9));
 		
-		board.printMap();
+//		board.printMap();
 		//moveBox(new Coords(9,6));
 		
 		//for (int i = 0; i <1; i++) {
@@ -119,19 +120,23 @@ public class Bond implements Agent{
 		}
 
 	}
+	private void p (String m){
+		if (DEBUG)
+			System.out.println(m);
+	}
 
 	public boolean isDeadLock(Board b) {
-		return bipartiteDeadLock(b);
+		return false;//bipartiteDeadLock(b);
 	}
 	
 	private boolean bipartiteDeadLock(Board b) {
 		Coords[] boxlist = b.getBoxes();
 		for (int i = 0; i < boxlist.length-1; i++) {
 			try {
-				System.out.println("pos: " + boxlist[i].x + " " + boxlist[i].y);
-				printBipartiteArray();
+				p("pos: " + boxlist[i].x + " " + boxlist[i].y);
+//				printBipartiteArray();
 				
-				System.out.println(bipartite[boxlist[i].y][boxlist[i].x]);
+				p(""+bipartite[boxlist[i].y][boxlist[i].x]);
 				
 				if (bipartite[boxlist[i].x][boxlist[i].y]==true) {
 					return true;
@@ -142,42 +147,54 @@ public class Bond implements Agent{
 		}
 		return false;
 	}
-	private void moveBox(Board board,Coords from) {
-		moveBox(board.getPlayer(), from, board.nextCoordInDirection(Board.Direction.UP, from), board);
-		moveBox(board.getPlayer(), from, board.nextCoordInDirection(Board.Direction.DOWN, from), board);
-		moveBox(board.getPlayer(), from, board.nextCoordInDirection(Board.Direction.LEFT, from), board);
-		moveBox(board.getPlayer(), from, board.nextCoordInDirection(Board.Direction.RIGHT, from), board);
+	private ArrayList<Board> moveBox(Board board,Coords inFrom) {
+		Coords from = new Coords (inFrom.x, inFrom.y);
+		ArrayList<Board> boards = new ArrayList<Board> ();
+		addState (moveBox(from, Board.Direction.UP, board), boards);
+		addState (moveBox(from, Board.Direction.DOWN, board), boards);
+		addState (moveBox(from, Board.Direction.LEFT, board), boards);
+		addState (moveBox(from, Board.Direction.RIGHT, board), boards);
+		return boards;
 	}
 	
-	private void moveBox(Coords player, Coords from, Coords to, Board board) {
-		ArrayList<Coords> adjacentCoords = walkableAdjacentCells(from, board);
-		if (DEBUG)
-			System.out.println("walkable size: " + adjacentCoords.size());
-		for (int i = 0; i < adjacentCoords.size(); i++) {
-			//System.out.println("adjacent coords: " + adjacentCoords.get(i).x + " " + adjacentCoords.get(i).y);
-			String pathToACellNextToFrom = findPath(player, adjacentCoords.get(i), board);
-			//System.out.println("Path: " + pathToACellNextToFrom);
-			if (pathToACellNextToFrom != null) {
-				//vi kan gå till rutan brevid
-				Board newBoard = board.clone();
-				newBoard.getPlayer().x = adjacentCoords.get(i).x;
-				newBoard.getPlayer().y = adjacentCoords.get(i).y;
-				//newBoard.printMap();
-				Board.Direction dir = getDirection(adjacentCoords.get(i), from);
-				newBoard.movePlayer(dir);
-				
-				//newBoard.printMap();
-				if (!passedStates.contains(newBoard.hash())) {
-					states.add(newBoard);
-				}
-				newBoard.printMap();
-				if (!isDeadLock(newBoard)){
-					newBoard.printMap();
-				}
-			} else {
-				// spelaren kan inte gå hit.
-			}
+	private void addState(Board board, ArrayList<Board> boards) {
+		if (board != null)
+			boards.add(board);
+	}
+
+	private Board moveBox(Coords inFrom, Board.Direction inTo, Board board) {
+		Coords player = board.getPlayer();
+		Coords from = new Coords (inFrom.x, inFrom.y);
+		Coords to = board.nextCoordInDirection(inTo, from);
+		Coords pushingPlayerPosition = getPushingPlayerPosition (inFrom, to);
+		if (!board.isTileWalkable(pushingPlayerPosition) || !board.isTileWalkable(to))
+			return null;
+		String pathToPos = findPath (player, pushingPlayerPosition, board);
+		if (pathToPos == null)
+			return null;
+		Board newBoard = board.clone();
+		newBoard.getPlayer().x = pushingPlayerPosition.x;
+		newBoard.getPlayer().y = pushingPlayerPosition.y;
+		newBoard.movePlayer(inTo);
+		if (deadLock (newBoard))
+			return null;
+
+		System.out.println("moved "+inFrom+" in direction "+inTo);
+		int kuk = 0;
+		for (Coords lol : newBoard.getBoxes()){
+			System.out.println ("Box "+kuk+": "+lol);
+			kuk++;
 		}
+		newBoard.printMap();
+		return newBoard;
+	}
+
+	private Coords getPushingPlayerPosition(Coords inFrom, Coords inTo) {
+		int x = inFrom.x;
+		int y = inFrom.y;
+		int modX = inFrom.x - inTo.x;
+		int modY = inFrom.y - inTo.y;
+		return new Coords (x + modX, y+modY);
 	}
 
 	private boolean deadLock(Board board) {
@@ -207,6 +224,7 @@ public class Bond implements Agent{
 		Stack<Coords> queue = new Stack<Coords> ();
 		counterMap = new int[boardWidth][boardHeight];
 		queue.push(from);
+		counterMap[from.x][from.y] = 1;
 		while (!queue.isEmpty()){
 			Coords c = queue.pop();
 			if (c.equals(to))
@@ -214,7 +232,7 @@ public class Bond implements Agent{
 			ArrayList<Coords> cells = createAdjacentCells (c, board);
 			for (int i=0; i<cells.size();i++){
 				Coords adjacentCell = cells.get(i);
-				boolean lowerCounterExists = counterMap [adjacentCell.x][adjacentCell.y] != 0 &&
+				boolean lowerCounterExists = counterMap [adjacentCell.x][adjacentCell.y] > 0 &&
 						counterMap [adjacentCell.x][adjacentCell.y] < counterMap [c.x][c.y]+1;
 				if (lowerCounterExists){
 					cells.remove(i);
@@ -227,8 +245,6 @@ public class Bond implements Agent{
 			for (Coords newCoords : cells)
 				queue.push(newCoords);
 		}
-		counterMap[from.x][from.y] = 0;
-		counterMap[to.x][to.y] = -1;
 		printCounter ();
 		//System.out.println("to, x: " + to.x + " y: " + to.y);
 		return extractPath (from, to);

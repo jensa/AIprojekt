@@ -156,8 +156,14 @@ public class Surf implements Board{
 	}
 
 	private void updateBox(Coords from, Coords to) {
-		boxes.remove(from);
-		boxes.add(to);
+		for (int i=0;i<boxes.size();i++){
+			if (boxes.get(i).equals(from)){
+				System.out.println("Movng box at "+from+" to "+to);
+				boxes.get(i).x = to.x;
+				boxes.get(i).y = to.y;
+				break;
+			}
+		}
 	}
 	
 	private boolean isTileGoal(Coords c) {
@@ -222,12 +228,18 @@ public class Surf implements Board{
 		for (int i=0;i<height;i++){
 			for (int j=0;j<width;j++)
 				if (new Coords(j,i).equals(this.playerPosition))
-					System.out.print("@");
+					System.out.print("[@]");
 				else
-					System.out.print(boardMatrix[j][i]);
+					System.out.print("["+boardMatrix[j][i]+"]");
 			System.out.print("\n");
 		}
+		System.out.println (hash ());
 		System.out.println("-----------------------");
+		try {
+			Thread.sleep(200);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public char[][] getBackingMatrix (){
@@ -255,16 +267,22 @@ public class Surf implements Board{
 	}
 
 	@Override
-	public double hash() {
+	public String hash() {
 		double hash = 0;
 		Coords[] b = new Coords[boxes.size()]; 
-		boxes.toArray(b);
+		for (int i=0; i<boxes.size();i++)
+			b[i] = boxes.get(i);
+		/*
 		for (int i = 0; i < b.length - 1; i++) {
 			double b1 =b[i].x*100;
 			double a = b[i].y*1;
 			double c = (a + b1)*(Math.pow(1000,b[i].id));
 			hash += c;
+		}*/
+		StringBuilder builder = new StringBuilder(b.length*4);
+		for (Coords c : b){
+			builder.append(""+c.x+c.y);
 		}
-		return hash;
+		return builder.toString();
 	}
 }

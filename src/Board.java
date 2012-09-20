@@ -38,5 +38,5 @@ public interface Board {
 	
 	public Coords nextCoordInDirection(Direction dir, Coords from);
 	
-	public double hash();
+	public String hash();
 }
