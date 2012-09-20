@@ -51,10 +51,13 @@ public class Bond implements Agent{
 		System.out.println("original");
 		board.printMap();
 		states.push(board);
+		System.out.println ("LOL");
+		printBoxes (board.getBoxHash());
+		System.out.println ("LOL");
 		while (!states.isEmpty()) {
 			Board state = states.pop();
 			String hashCode = state.hash();
-			if (true){//!passedStates.contains(hashCode)) {
+			if (!passedStates.contains(hashCode)) {
 				if (state.isSolved()) {
 					System.out.println("We did it");
 					state.printMap();
@@ -175,18 +178,23 @@ public class Bond implements Agent{
 		Board newBoard = board.clone();
 		newBoard.getPlayer().x = pushingPlayerPosition.x;
 		newBoard.getPlayer().y = pushingPlayerPosition.y;
+		System.out.println("moving "+inFrom+" in direction "+inTo);
+		newBoard.printMap();
 		newBoard.movePlayer(inTo);
 		if (deadLock (newBoard))
 			return null;
-
 		System.out.println("moved "+inFrom+" in direction "+inTo);
-		int kuk = 0;
-		for (Coords lol : newBoard.getBoxes()){
+		printBoxes (newBoard.getBoxHash());
+		newBoard.printMap();
+		return newBoard;
+	}
+	
+	private void printBoxes (ArrayList<Coords> bx){
+		int kuk = 1;
+		for (Coords lol : bx){
 			System.out.println ("Box "+kuk+": "+lol);
 			kuk++;
 		}
-		newBoard.printMap();
-		return newBoard;
 	}
 
 	private Coords getPushingPlayerPosition(Coords inFrom, Coords inTo) {

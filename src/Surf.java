@@ -37,7 +37,10 @@ public class Surf implements Board{
 	
 	public Surf(Board b) {
 		goals = (ArrayList<Coords>) b.getGoalsList().clone();
-		boxes = (ArrayList<Coords>) b.getBoxHash().clone();
+		
+		boxes = new ArrayList<Coords> ();
+		for (Coords c : b.getBoxHash())
+			boxes.add(new Coords (c.x, c.y));
 		width = b.getWidth();
 		height = b.getHeight();
 		boardMatrix = new char[width][height];
@@ -158,7 +161,6 @@ public class Surf implements Board{
 	private void updateBox(Coords from, Coords to) {
 		for (int i=0;i<boxes.size();i++){
 			if (boxes.get(i).equals(from)){
-				System.out.println("Movng box at "+from+" to "+to);
 				boxes.get(i).x = to.x;
 				boxes.get(i).y = to.y;
 				break;
@@ -235,11 +237,6 @@ public class Surf implements Board{
 		}
 		System.out.println (hash ());
 		System.out.println("-----------------------");
-		try {
-			Thread.sleep(200);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
 	}
 	
 	public char[][] getBackingMatrix (){
