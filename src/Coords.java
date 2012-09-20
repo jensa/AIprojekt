@@ -3,10 +3,19 @@ public class Coords {
 	
 	public int x;
 	public int y;
+	public int id;
+	
 	
 	public Coords (int tx, int ty){
 		x = tx;
 		y = ty;
+		id = 0;
+	}
+	
+	public Coords(int tx, int ty, int in) {
+		x = tx;
+		y = ty;
+		id = in;
 	}
 	
 	public int getX (){

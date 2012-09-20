@@ -32,9 +32,11 @@ public interface Board {
 
 	public int getWidth();
 
-	public HashSet<Coords> getBoxHash();
+	public ArrayList<Coords> getBoxHash();
 	
 	public ArrayList<Coords> getGoalsList();
 	
 	public Coords nextCoordInDirection(Direction dir, Coords from);
+	
+	public double hash();
 }

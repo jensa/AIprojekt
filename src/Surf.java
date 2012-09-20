@@ -8,26 +8,27 @@ public class Surf implements Board{
 	final int height;
 	final int width;
 	
+	int nr = 0;
+	
 	final int wall = 0x23;
 	public static final char player = 0x40;
 	public static final char playerGoal = 0x2b;
-	final int box = 0x24;
-	final int boxGoal = 0x2a;
+	public static final char box = 0x24;
+	public static final char boxGoal = 0x2a;
 	public static final char goal = 0x2e;
 	public static final char empty = 0x20;
 	
 	public char[][] boardMatrix;
 	public ArrayList<Coords> goals;
 	public Coords playerPosition;
-	public HashSet<Coords> boxes;
+	public ArrayList<Coords> boxes;
 	
 	public Surf (int longestRow, String[] rows){
-		boxes = new HashSet<Coords> ();
+		boxes = new ArrayList<Coords> ();
 		goals = new ArrayList<Coords> ();
 		height = rows.length;
 		width = longestRow;
 		boardMatrix = new char[width][height];
-		boxes = new HashSet<Coords>();
 		
 		for (int i=0;i<rows.length;i++){
 			addRow (rows[i], i);
@@ -36,7 +37,7 @@ public class Surf implements Board{
 	
 	public Surf(Board b) {
 		goals = (ArrayList<Coords>) b.getGoalsList().clone();
-		boxes = (HashSet<Coords>) b.getBoxHash().clone();
+		boxes = (ArrayList<Coords>) b.getBoxHash().clone();
 		width = b.getWidth();
 		height = b.getHeight();
 		boardMatrix = new char[width][height];
@@ -60,6 +61,7 @@ public class Surf implements Board{
 	}
 
 	private void addRow (String row, int rowNum){
+
 		for (int i=0;i<row.length();i++){
 			char currentTile = row.charAt(i);
 			boardMatrix[i][rowNum] = currentTile;
@@ -75,8 +77,14 @@ public class Surf implements Board{
 			}
 			if (currentTile == goal || currentTile == boxGoal){
 				goals.add(new Coords (i, rowNum));
-			if (currentTile == box || currentTile == boxGoal);
-				boxes.add(new Coords (i, rowNum));
+			}
+			if (currentTile == box) {
+				boxes.add(new Coords (i, rowNum, nr));
+				nr += 1;
+			}
+			if (currentTile == boxGoal) {
+				boxes.add(new Coords(i, rowNum, nr));
+				nr += 1;
 			}
 		}
 	}
@@ -194,8 +202,11 @@ public class Surf implements Board{
 
 	@Override
 	public Coords[] getBoxes() {
+		//Coords[] boxz = new Coords[boxes.size()];
+		//return goals.toArray(boxz);
 		Coords[] boxz = new Coords[boxes.size()];
-		return goals.toArray(boxz);
+		boxes.toArray(boxz);
+		return boxz;
 	}
 	
 	public boolean isSolved (){
@@ -234,12 +245,26 @@ public class Surf implements Board{
 		return width;
 	}
 
-	public HashSet<Coords> getBoxHash() {
+	public ArrayList<Coords> getBoxHash() {
 		return boxes;
 	}
 
 	@Override
 	public ArrayList<Coords> getGoalsList() {
 		return this.goals;
+	}
+
+	@Override
+	public double hash() {
+		double hash = 0;
+		Coords[] b = new Coords[boxes.size()]; 
+		boxes.toArray(b);
+		for (int i = 0; i < b.length - 1; i++) {
+			double b1 =b[i].x*100;
+			double a = b[i].y*1;
+			double c = (a + b1)*(Math.pow(1000,b[i].id));
+			hash += c;
+		}
+		return hash;
 	}
 }

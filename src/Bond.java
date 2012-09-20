@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Stack;
@@ -10,6 +11,7 @@ public class Bond implements Agent{
 	int boardWidth;
 	int boardHeight;
 	Queue<Board> states = new LinkedList<Board>();
+	HashSet<Double> passedStates = new HashSet<Double>();
 	private boolean[][] bipartite;
 	
 
@@ -19,7 +21,6 @@ public class Bond implements Agent{
 		System.out.println("solve");
 		boardHeight = board.getHeight ();
 		boardWidth = board.getWidth ();
-		Coords[] boxes = board.getBoxes();
 		
 		calculateBipartiteDeadLocks();
 		
@@ -52,9 +53,20 @@ public class Bond implements Agent{
 		states.add(board);
 		while (!states.isEmpty()) {
 			Board state = states.poll();
-			if (!isDeadLock(state)) {
-				for (Coords c : boxes) {
-					moveBox(state.getPlayer(), new Coords(8,8), state);
+			Double hashCode = state.hash();
+			if (!passedStates.contains(hashCode)) {
+				if (state.isSolved()) {
+					System.out.println("We did it");
+					state.printMap();
+					break;
+				} else {
+					passedStates.add(hashCode);
+					if (!isDeadLock(state)) {
+						//state.printMap();
+						for (Coords c : state.getBoxes()) {
+							moveBox(state,c);
+						}
+					}
 				}
 			}
 		}
@@ -64,7 +76,7 @@ public class Bond implements Agent{
 		//moveBox(new Coords(9,6));
 		
 		//for (int i = 0; i <1; i++) {
-		System.out.println(findPath (board.getPlayer(), boxes[0], board));
+		System.out.println(findPath (board.getPlayer(), board.getBoxes()[0], board));
 		//}
 		return "YOLO";
 	}
@@ -83,9 +95,18 @@ public class Bond implements Agent{
 		bipartite[4][4] = true;
 		bipartite[5][5] = true;
 		bipartite[10][6] = true;
+		bipartite[10][7] = true;
+		bipartite[10][8] = true;
+		bipartite[10][9] = true;
 		bipartite[10][10] = true;
 		bipartite[5][10] = true;
 		
+		if (DEBUG) {
+			//printBipartiteArray();
+		}
+	}
+	
+	private void printBipartiteArray() {
 		for (int i = 0; i < boardHeight; i++) {
 			for (int j = 0; j < boardWidth; j++) {
 				if (bipartite[j][i]) {
@@ -96,6 +117,7 @@ public class Bond implements Agent{
 			}
 			System.out.println("");
 		}
+
 	}
 
 	public boolean isDeadLock(Board b) {
@@ -103,18 +125,34 @@ public class Bond implements Agent{
 	}
 	
 	private boolean bipartiteDeadLock(Board b) {
-		return true;
+		Coords[] boxlist = b.getBoxes();
+		for (int i = 0; i < boxlist.length-1; i++) {
+			try {
+				System.out.println("pos: " + boxlist[i].x + " " + boxlist[i].y);
+				printBipartiteArray();
+				
+				System.out.println(bipartite[boxlist[i].y][boxlist[i].x]);
+				
+				if (bipartite[boxlist[i].x][boxlist[i].y]==true) {
+					return true;
+				}
+			} catch( Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return false;
 	}
-	private void moveBox(Coords player, Coords from, Board board) {
-		moveBox(player, from, board.nextCoordInDirection(Board.Direction.UP, from), board);
-		moveBox(player, from, board.nextCoordInDirection(Board.Direction.DOWN, from), board);
-		moveBox(player, from, board.nextCoordInDirection(Board.Direction.LEFT, from), board);
-		moveBox(player, from, board.nextCoordInDirection(Board.Direction.RIGHT, from), board);
+	private void moveBox(Board board,Coords from) {
+		moveBox(board.getPlayer(), from, board.nextCoordInDirection(Board.Direction.UP, from), board);
+		moveBox(board.getPlayer(), from, board.nextCoordInDirection(Board.Direction.DOWN, from), board);
+		moveBox(board.getPlayer(), from, board.nextCoordInDirection(Board.Direction.LEFT, from), board);
+		moveBox(board.getPlayer(), from, board.nextCoordInDirection(Board.Direction.RIGHT, from), board);
 	}
 	
 	private void moveBox(Coords player, Coords from, Coords to, Board board) {
 		ArrayList<Coords> adjacentCoords = walkableAdjacentCells(from, board);
-		System.out.println("walkable size: " + adjacentCoords.size());
+		if (DEBUG)
+			System.out.println("walkable size: " + adjacentCoords.size());
 		for (int i = 0; i < adjacentCoords.size(); i++) {
 			//System.out.println("adjacent coords: " + adjacentCoords.get(i).x + " " + adjacentCoords.get(i).y);
 			String pathToACellNextToFrom = findPath(player, adjacentCoords.get(i), board);
@@ -124,14 +162,18 @@ public class Bond implements Agent{
 				Board newBoard = board.clone();
 				newBoard.getPlayer().x = adjacentCoords.get(i).x;
 				newBoard.getPlayer().y = adjacentCoords.get(i).y;
-				newBoard.printMap();
+				//newBoard.printMap();
 				Board.Direction dir = getDirection(adjacentCoords.get(i), from);
 				newBoard.movePlayer(dir);
 				
+				//newBoard.printMap();
+				if (!passedStates.contains(newBoard.hash())) {
+					states.add(newBoard);
+				}
 				newBoard.printMap();
-				states.add(newBoard);
-				System.out.println("original");
-				board.printMap();
+				if (!isDeadLock(newBoard)){
+					newBoard.printMap();
+				}
 			} else {
 				// spelaren kan inte gå hit.
 			}
@@ -188,7 +230,7 @@ public class Bond implements Agent{
 		counterMap[from.x][from.y] = 0;
 		counterMap[to.x][to.y] = -1;
 		printCounter ();
-		System.out.println("to, x: " + to.x + " y: " + to.y);
+		//System.out.println("to, x: " + to.x + " y: " + to.y);
 		return extractPath (from, to);
 	}
 	
