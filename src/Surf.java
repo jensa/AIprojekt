@@ -282,4 +282,16 @@ public class Surf implements Board{
 		}
 		return builder.toString();
 	}
+
+	@Override
+	public String getPath() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void appendPath(String path) {
+		// TODO Auto-generated method stub
+		
+	}
 }

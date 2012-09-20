@@ -39,4 +39,8 @@ public interface Board {
 	public Coords nextCoordInDirection(Direction dir, Coords from);
 	
 	public String hash();
+	
+	public String getPath ();
+	
+	public void appendPath (String path);
 }
