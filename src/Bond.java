@@ -54,6 +54,7 @@ public class Bond implements Agent{
 		System.out.println ("LOL");
 		printBoxes (board.getBoxHash());
 		System.out.println ("LOL");
+		String path = "";
 		while (!states.isEmpty()) {
 			Board state = states.pop();
 			String hashCode = state.hash();
@@ -61,6 +62,7 @@ public class Bond implements Agent{
 				if (state.isSolved()) {
 					System.out.println("We did it");
 					state.printMap();
+					path = state.getPath();
 					break;
 				} else {
 					passedStates.add(hashCode);
@@ -82,7 +84,7 @@ public class Bond implements Agent{
 		//for (int i = 0; i <1; i++) {
 		System.out.println(findPath (board.getPlayer(), board.getBoxes()[0], board));
 		//}
-		return "YOLO";
+		return path;
 	}
 	
 	private void calculateBipartiteDeadLocks() {
@@ -176,6 +178,7 @@ public class Bond implements Agent{
 		if (pathToPos == null)
 			return null;
 		Board newBoard = board.clone();
+		newBoard.appendPath(pathToPos);
 		newBoard.getPlayer().x = pushingPlayerPosition.x;
 		newBoard.getPlayer().y = pushingPlayerPosition.y;
 		System.out.println("moving "+inFrom+" in direction "+inTo);

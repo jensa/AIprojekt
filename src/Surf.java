@@ -5,6 +5,7 @@ import java.util.HashSet;
 public class Surf implements Board{
 	
 	private boolean solved;
+	private String path;
 	final int height;
 	final int width;
 	
@@ -23,7 +24,9 @@ public class Surf implements Board{
 	public Coords playerPosition;
 	public ArrayList<Coords> boxes;
 	
+	
 	public Surf (int longestRow, String[] rows){
+		path = "";
 		boxes = new ArrayList<Coords> ();
 		goals = new ArrayList<Coords> ();
 		height = rows.length;
@@ -37,7 +40,7 @@ public class Surf implements Board{
 	
 	public Surf(Board b) {
 		goals = (ArrayList<Coords>) b.getGoalsList().clone();
-		
+		path = b.getPath();
 		boxes = new ArrayList<Coords> ();
 		for (Coords c : b.getBoxHash())
 			boxes.add(new Coords (c.x, c.y));
@@ -285,13 +288,12 @@ public class Surf implements Board{
 
 	@Override
 	public String getPath() {
-		// TODO Auto-generated method stub
-		return null;
+		return path;
 	}
 
 	@Override
-	public void appendPath(String path) {
-		// TODO Auto-generated method stub
+	public void appendPath(String pathPart) {
+		path = path.concat(pathPart);
 		
 	}
 }
