@@ -18,6 +18,8 @@ public class MatrixTools {
 
 	private static boolean isDeadlockSquare(int i, int j, char[][] backingMatrix) {
 		ArrayList<Coords> adjacent = createAdjacentCells (new Coords (i, j), backingMatrix);
+		if (backingMatrix[i][j] == Surf.goal || backingMatrix[i][j] == Surf.boxGoal)
+			return false;
 		if (adjacent.size() > 2)
 			return true;
 		if (adjacent.size() == 2){
@@ -27,7 +29,7 @@ public class MatrixTools {
 				return true;
 		}
 		return false;
-	} 
+	}
 
 	public static ArrayList<Coords> createAdjacentCells(Coords cell, char[][] m) {
 		ArrayList<Coords> cells = new ArrayList<Coords> ();

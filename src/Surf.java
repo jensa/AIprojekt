@@ -3,14 +3,16 @@ import java.util.HashSet;
 
 
 public class Surf implements Board{
-	
+
 	private boolean solved;
 	private String path;
 	final int height;
 	final int width;
 	
+	private int scoreMod;
+
 	int nr = 0;
-	
+
 	public static final char wall = 0x23;
 	public static final char player = 0x40;
 	public static final char playerGoal = 0x2b;
@@ -18,13 +20,13 @@ public class Surf implements Board{
 	public static final char boxGoal = 0x2a;
 	public static final char goal = 0x2e;
 	public static final char empty = 0x20;
-	
+
 	public char[][] boardMatrix;
 	public ArrayList<Coords> goals;
 	public Coords playerPosition;
 	public ArrayList<Coords> boxes;
-	
-	
+
+
 	public Surf (int longestRow, String[] rows){
 		path = "";
 		boxes = new ArrayList<Coords> ();
@@ -32,12 +34,12 @@ public class Surf implements Board{
 		height = rows.length;
 		width = longestRow;
 		boardMatrix = new char[width][height];
-		
+
 		for (int i=0;i<rows.length;i++){
 			addRow (rows[i], i);
 		}
 	}
-	
+
 	public Surf(Board b) {
 		goals = (ArrayList<Coords>) b.getGoalsList().clone();
 		path = b.getPath();
@@ -94,43 +96,23 @@ public class Surf implements Board{
 			}
 		}
 	}
-	
-	public Coords nextCoordInDirection(Direction dir, Coords from) {
-		int xMod = 0; int yMod = 0;
-		switch (dir){
-			case UP:
-				yMod = -1;
-				break;
-			case DOWN:
-				yMod = 1;
-				break;
-			case LEFT:
-				xMod = -1;
-				break;
-			case RIGHT:
-				xMod = 1;
-				break;
-		}
-		return new Coords(from.x + xMod, from.y + yMod);
-	}
-	
-	
+
 	@Override
 	public void movePlayer(Direction dir) {
 		int xMod = 0; int yMod = 0;
 		switch (dir){
-			case UP:
-				yMod = -1;
-				break;
-			case DOWN:
-				yMod = 1;
-				break;
-			case LEFT:
-				xMod = -1;
-				break;
-			case RIGHT:
-				xMod = 1;
-				break;
+		case UP:
+			yMod = -1;
+			break;
+		case DOWN:
+			yMod = 1;
+			break;
+		case LEFT:
+			xMod = -1;
+			break;
+		case RIGHT:
+			xMod = 1;
+			break;
 		}
 		Coords newPos = new Coords (playerPosition.getX()+xMod, playerPosition.getY()+yMod);
 		boolean emptyPosition = isTileWalkable (newPos);
@@ -143,11 +125,11 @@ public class Surf implements Board{
 				doBoxMove (newPos, nextTile);
 		}
 	}
-	
+
 	private void doMove(Coords newPos) {
 		playerPosition = newPos;
 	}
-	
+
 	private void doBoxMove(Coords boxPos, Coords moveTo) {
 		if (isTileGoal (boxPos))
 			boardMatrix[boxPos.getX()][boxPos.getY()] = goal;
@@ -170,19 +152,19 @@ public class Surf implements Board{
 			}
 		}
 	}
-	
+
 	private boolean isTileGoal(Coords c) {
 		if (goals.contains(c))
 			return true;
 		return false;
 	}
-	
+
 	private boolean isTileBox (Coords c){
 		if (boardMatrix[c.getX()][c.getY()] == box | boardMatrix[c.getX ()][c.getY()] == boxGoal)
 			return true;
 		return false;
 	}
-	
+
 	private boolean isTilePlayerGoal (Coords c){
 		if (boardMatrix[c.getX()][c.getY()] == playerGoal)
 			return true;
@@ -219,7 +201,7 @@ public class Surf implements Board{
 		boxes.toArray(boxz);
 		return boxz;
 	}
-	
+
 	public boolean isSolved (){
 		for (Coords c : boxes){
 			if ( !goals.contains(c) )
@@ -227,9 +209,8 @@ public class Surf implements Board{
 		}
 		return true;
 	}
-	
+
 	public void printMap (){
-		System.out.println("Map");
 		for (int i=0;i<height;i++){
 			for (int j=0;j<width;j++)
 				if (new Coords(j,i).equals(this.playerPosition))
@@ -241,7 +222,7 @@ public class Surf implements Board{
 		System.out.println (hash ());
 		System.out.println("-----------------------");
 	}
-	
+
 	public char[][] getBackingMatrix (){
 		return boardMatrix;
 	}
@@ -253,7 +234,6 @@ public class Surf implements Board{
 
 	@Override
 	public int getWidth() {
-		// TODO Auto-generated method stub
 		return width;
 	}
 
@@ -292,8 +272,40 @@ public class Surf implements Board{
 	}
 
 	@Override
-	public void appendPath(String pathPart) {
-		path = path.concat(pathPart);
+	public boolean appendPath(String pathPart) {
+		if (path.length() < 500)
+			path = path.concat(pathPart);
+		else
+			return false;
+		return true;
+
+
+	}
+	
+	public int getScore (){
+		int kuk = 0;
+		for (Coords c : goals){
+			if (getTileAt (c) == boxGoal)
+				kuk++;
+		}
+		if (kuk > 5){
+			int lol = 0;
+		lol = lol+1;
+		}
+		return kuk+scoreMod;
 		
+	}
+	
+	public void modScore (int mod){
+		scoreMod += mod;
+	}
+
+	@Override
+	public int compareTo(Board o) {
+		if (o.getScore() > getScore ())
+			return -1;
+		else if (o.getScore() < getScore ())
+			return 1;
+		return 0;
 	}
 }

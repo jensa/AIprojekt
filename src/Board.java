@@ -2,7 +2,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 
-public interface Board {
+public interface Board extends Comparable<Board>{
 	
 	public enum Direction{
 		UP,DOWN,LEFT,RIGHT
@@ -36,11 +36,13 @@ public interface Board {
 	
 	public ArrayList<Coords> getGoalsList();
 	
-	public Coords nextCoordInDirection(Direction dir, Coords from);
-	
 	public String hash();
 	
 	public String getPath ();
 	
-	public void appendPath (String path);
+	public boolean appendPath (String path);
+	
+	public int getScore ();
+	
+	public void modScore (int mod);
 }
