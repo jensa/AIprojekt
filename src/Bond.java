@@ -21,7 +21,8 @@ public class Bond implements Agent{
 		System.out.println("solve");
 		boardHeight = board.getHeight ();
 		boardWidth = board.getWidth ();
-		
+		bipartite = MatrixTools.createMatrix(solveBoard);
+		MatrixTools.printBipartiteArray(bipartite, boardHeight, boardWidth);
 //		calculateBipartiteDeadLocks();
 		
 //		board.printMap();
@@ -171,6 +172,8 @@ public class Bond implements Agent{
 		Coords player = board.getPlayer();
 		Coords from = new Coords (inFrom.x, inFrom.y);
 		Coords to = board.nextCoordInDirection(inTo, from);
+		if (bipartite[to.y][to.x])
+			return null;
 		Coords pushingPlayerPosition = getPushingPlayerPosition (inFrom, to);
 		if (!board.isTileWalkable(pushingPlayerPosition) || !board.isTileWalkable(to))
 			return null;

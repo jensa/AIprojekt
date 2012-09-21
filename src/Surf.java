@@ -11,7 +11,7 @@ public class Surf implements Board{
 	
 	int nr = 0;
 	
-	final int wall = 0x23;
+	public static final char wall = 0x23;
 	public static final char player = 0x40;
 	public static final char playerGoal = 0x2b;
 	public static final char box = 0x24;
