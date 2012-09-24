@@ -324,7 +324,7 @@ public class Bond implements Agent{
 		return newBoard;
 	}
 
-	private String getMovedDirection(Board.Direction inTo) {
+	public static String getMovedDirection(Board.Direction inTo) {
 		switch (inTo){
 		case RIGHT: return "R";
 		case LEFT: return "L";
@@ -342,7 +342,7 @@ public class Bond implements Agent{
 		}
 	}
 
-	private Coords getPushingPlayerPosition(Coords inFrom, Coords inTo) {
+	public static Coords getPushingPlayerPosition(Coords inFrom, Coords inTo) {
 		int x = inFrom.x;
 		int y = inFrom.y;
 		int modX = inFrom.x - inTo.x;
@@ -373,9 +373,9 @@ public class Bond implements Agent{
 		return null; // null == ogiltigt drag.
 	}
 
-	public String findPath (Coords from, Coords to, Board board){
+	public static String findPath (Coords from, Coords to, Board board){
 		Stack<Coords> queue = new Stack<Coords> ();
-		counterMap = new int[boardWidth][boardHeight];
+		int[][] counterMap = new int[board.getWidth()][board.getHeight()];
 		queue.push(from);
 		counterMap[from.x][from.y] = 1;
 		while (!queue.isEmpty()){
@@ -398,12 +398,12 @@ public class Bond implements Agent{
 			for (Coords newCoords : cells)
 				queue.push(newCoords);
 		}
-		printCounter ();
+		printCounter (counterMap);
 		//p("to, x: " + to.x + " y: " + to.y);
-		return extractPath (from, to);
+		return extractPath (from, to, counterMap);
 	}
 
-	private String extractPath(Coords from, Coords to) {
+	private static String extractPath(Coords from, Coords to, int[][] counterMap) {
 		if (to.x == from.x && to.y == from.y) {
 			return "";
 		}
@@ -439,7 +439,7 @@ public class Bond implements Agent{
 		if (dir=="")
 			return null;
 		else
-			return extractPath(from, new Coords(nextX, nextY))+dir;
+			return extractPath(from, new Coords(nextX, nextY), counterMap)+dir;
 	}
 
 	/**
@@ -456,7 +456,7 @@ public class Bond implements Agent{
 		}
 		return list;
 	}
-	private ArrayList<Coords> createAdjacentCells(Coords cell, Board board) {
+	private static ArrayList<Coords> createAdjacentCells(Coords cell, Board board) {
 		ArrayList<Coords> cells = new ArrayList<Coords> ();
 		addCell (new Coords (cell.x-1, cell.y), cells, board);
 		addCell (new Coords (cell.x+1, cell.y), cells, board);
@@ -465,15 +465,15 @@ public class Bond implements Agent{
 		return cells;
 	}
 
-	private void addCell (Coords c, ArrayList<Coords> cells, Board board){
+	private static void addCell (Coords c, ArrayList<Coords> cells, Board board){
 		if (board.isTileWalkable(c))
 			cells.add(c);
 	}
 
-	private void printCounter (){
+	private static void printCounter (int[][] counterMap){
 		if (DEBUG)
-			for (int i=0;i<boardHeight;i++){
-				for (int j=0;j<boardWidth;j++){
+			for (int i=0;i<counterMap.length;i++){
+				for (int j=0;j<counterMap[0].length;j++){
 					if (counterMap[j][i] > 9 || counterMap[j][i] < 0){
 						System.out.print("["+counterMap[j][i]+"]");
 					}else
