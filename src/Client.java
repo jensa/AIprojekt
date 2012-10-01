@@ -3,11 +3,6 @@ import java.net.*;
 
 public class Client {
 	
-	private static String up = "U";
-	private static String down = "D";
-	private static String left = "L";
-	private static String right = "R";
-	
 
 	public static void main(String[] pArgs) 
 	{

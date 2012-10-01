@@ -1,14 +1,12 @@
 import java.util.ArrayList;
-import java.util.HashSet;
 
 
 public class Surf implements Board{
 
-	private boolean solved;
 	private String path;
 	final int height;
 	final int width;
-	
+
 	private int scoreMod;
 
 	int nr = 0;
@@ -20,11 +18,14 @@ public class Surf implements Board{
 	public static final char boxGoal = 0x2a;
 	public static final char goal = 0x2e;
 	public static final char empty = 0x20;
+	public static final char OOB = 0x30;
 
 	public char[][] boardMatrix;
 	public ArrayList<Coords> goals;
 	public Coords playerPosition;
 	public ArrayList<Coords> boxes;
+
+	private static int lol;
 
 
 	public Surf (int longestRow, String[] rows){
@@ -153,6 +154,35 @@ public class Surf implements Board{
 		}
 	}
 
+	@Override
+	public boolean equals (Object o){
+		if (!(o instanceof Board))
+			return false;
+		Board b = (Board) o;
+		if (b.getHeight() != getHeight () || b.getWidth() != getWidth ())
+			return false;
+		for (int i=0;i< b.getWidth();i++){
+			for (int j=0;j<b.getHeight();j++){
+				Coords c = new Coords(i,j);
+				if (b.getTileAt(c) != getTileAt(c))
+					return false;
+			}
+		}
+		return true;
+	}
+
+	@Override
+	public int hashCode (){
+		
+		int hash = 0;
+		for (int i=0;i< getWidth();i++){
+			for (int j=0;j<getHeight();j++){
+				hash += getTileAt (new Coords (j,i));
+			}
+		}
+		return hash;
+	}
+
 	private boolean isTileGoal(Coords c) {
 		if (goals.contains(c))
 			return true;
@@ -165,21 +195,35 @@ public class Surf implements Board{
 		return false;
 	}
 
-	private boolean isTilePlayerGoal (Coords c){
-		if (boardMatrix[c.getX()][c.getY()] == playerGoal)
-			return true;
-		return false;
-	}
-
 	@Override
 	public char getTileAt(Coords c) {
-		return boardMatrix[c.x][c.y];
-	}
+		try{
+			return boardMatrix[c.x][c.y];
+		}catch (IndexOutOfBoundsException e){
+			return OOB; 
+		}
 
+	}	
+	public boolean isTileWalkable(Coords c, boolean ignoreBoxes) {
+		if (ignoreBoxes){
+			char[] chars = {empty, goal, box, boxGoal};
+			return checkLocationForTiles (chars, c);
+		}else{
+			char[] chars = {empty, goal};
+			return checkLocationForTiles (chars, c);
+		}
+	}
 	@Override
 	public boolean isTileWalkable(Coords c) {
-		if (boardMatrix[c.x][c.y] == empty || boardMatrix[c.x][c.y] == goal)
-			return true;
+		char[] chars = {empty, goal};
+		return checkLocationForTiles (chars, c);
+	}
+
+	private boolean checkLocationForTiles (char[] chars, Coords c){
+		for (char ch : chars){
+			if (getTileAt (c) == ch)
+				return true;
+		}
 		return false;
 	}
 	@Override
@@ -211,6 +255,10 @@ public class Surf implements Board{
 	}
 
 	public void printMap (){
+		lol = 1;
+		if (lol>1)
+			return;
+
 		for (int i=0;i<height;i++){
 			for (int j=0;j<width;j++)
 				if (new Coords(j,i).equals(this.playerPosition))
@@ -219,8 +267,15 @@ public class Surf implements Board{
 					System.out.print("["+boardMatrix[j][i]+"]");
 			System.out.print("\n");
 		}
-		System.out.println (hash ());
+		System.out.println (getScore ());
 		System.out.println("-----------------------");
+		if (Tools.DEBUG){
+			try {
+				Thread.sleep(200);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	public char[][] getBackingMatrix (){
@@ -248,7 +303,6 @@ public class Surf implements Board{
 
 	@Override
 	public String hash() {
-		double hash = 0;
 		Coords[] b = new Coords[boxes.size()]; 
 		for (int i=0; i<boxes.size();i++)
 			b[i] = boxes.get(i);
@@ -273,34 +327,35 @@ public class Surf implements Board{
 
 	@Override
 	public boolean appendPath(String pathPart) {
-		if (path.length() < 500)
-			path = path.concat(pathPart);
-		else
-			return false;
+		path = path.concat(pathPart);
 		return true;
 
 
 	}
-	
+	/**
+	 * Score is calced the following:
+	 * box on goal: 10pts
+	 * path to goal form box: 1pt
+	 */
 	public int getScore (){
 		int kuk = 0;
 		for (Coords c : goals){
 			if (getTileAt (c) == boxGoal)
 				kuk += 10;
 		}
-		for (Coords c : boxes){
-			if (moveBoxToGoal (this, c))
+		for (Coords c : goals){
+			if (Bond.findPath(playerPosition, c, this) != null)
 				kuk++;
 		}
-			
+
 		if (kuk > 5){
 			int lol = 0;
-		lol = lol+1;
+			lol = lol+1;
 		}
 		return kuk+scoreMod;
-		
+
 	}
-	
+
 	public void modScore (int mod){
 		scoreMod += mod;
 	}
@@ -312,74 +367,5 @@ public class Surf implements Board{
 		else if (o.getScore() < getScore ())
 			return 1;
 		return 0;
-	}
-	
-	private boolean moveBoxToGoal(Board board, Coords inFrom) {
-		Coords[] goals = board.getGoals();
-		Coords from = new Coords (inFrom.x, inFrom.y);
-		ArrayList<Board> boards = new ArrayList<Board> ();
-		for (Coords c : goals){
-			if (board.getTileAt(c) == Surf.goal){
-				Board boxMoved = moveBoxToCoords (from, c, board);
-				if (boxMoved != null)
-					return true;
-				
-			}
-		}
-		return false;
-	}
-	
-	private Board moveBoxToCoords (Coords from, Coords to, Board board){
-		String pathToPos = Bond.findPath (from, to, board);
-		if (pathToPos == null)
-			return null;
-		char[] path = pathToPos.toCharArray();
-		Board b = board;
-		for (char step : path){
-			Board.Direction dir = null;
-			switch (step){
-			case 'U': dir = Board.Direction.UP;break;
-			case 'D': dir = Board.Direction.DOWN;break;
-			case 'L': dir = Board.Direction.LEFT;break;
-			case 'R': dir = Board.Direction.RIGHT;break;
-			}
-			b = moveBox (from, dir, b);
-			if (b == null)
-				return null;
-			from = CoordHelper.nextCoordInDirection(dir, from);
-			
-		}
-		b.modScore(20);
-		return b;
-	}
-	
-	private Board moveBox(Coords inFrom, Board.Direction inTo, Board board) {
-		Coords player = board.getPlayer();
-		Coords from = new Coords (inFrom.x, inFrom.y);
-		Coords to = CoordHelper.nextCoordInDirection(inTo, from);
-		Coords pushingPlayerPosition = Bond.getPushingPlayerPosition (inFrom, to);
-		if (!board.isTileWalkable(pushingPlayerPosition) || !board.isTileWalkable(to))
-			return null;
-		String pathToPos = Bond.findPath (player, pushingPlayerPosition, board);
-		if (pathToPos == null)
-			return null;
-		Board newBoard = board.clone();
-		String movedDirection = Bond.getMovedDirection (inTo);
-		if (!newBoard.appendPath(pathToPos+movedDirection))
-			return null;
-		newBoard.getPlayer().x = pushingPlayerPosition.x;
-		newBoard.getPlayer().y = pushingPlayerPosition.y;
-		newBoard.movePlayer(inTo);
-		if (board.getTileAt(from) == Surf.boxGoal && newBoard.getTileAt(to) == Surf.boxGoal)
-			newBoard.modScore(-60);
-		newBoard.printMap();
-		/*
-		boolean[][] deadlockMatrix = calculateDeadlock (newBoard);
-		if (deadlockMatrix[to.x][to.y])
-			return null;
-		if (deadLock (newBoard))
-			return null;*/
-		newBoard.printMap();
-		return newBoard;
 	}
 }

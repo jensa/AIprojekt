@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.HashSet;
 
 
 public interface Board extends Comparable<Board>{
@@ -15,6 +14,8 @@ public interface Board extends Comparable<Board>{
 	public char getTileAt (Coords c);
 	
 	public boolean isTileWalkable (Coords c);
+	
+	public boolean isTileWalkable(Coords c, boolean ignoreBoxes);
 	
 	public Coords[] getGoals ();
 	
