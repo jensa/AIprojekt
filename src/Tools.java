@@ -61,13 +61,26 @@ public class Tools {
 		}
 	}
 
-	public static void printBipartiteArray(boolean[][] bipartite, int boardHeight, int boardWidth) {
+	public static void printBipartiteArray(boolean[][] bipartite, 
+			int boardHeight, int boardWidth) {
+		System.out.print("ÿ x:");
+		for ( int w = 0;w<boardWidth;w++){
+			if (w<10)
+				System.out.print ("[0"+w+"]");
+			else
+				System.out.print ("["+w+"]");
+		}
+		System.out.print("\n");
 		for (int i = 0; i < boardHeight; i++) {
+			if (i<10)
+				System.out.print ("[0"+i+"]");
+			else
+				System.out.print ("["+i+"]");
 			for (int j = 0; j < boardWidth; j++) {
 				if (bipartite[i][j]) {
-					System.out.print("[x]");
+					System.out.print("[]");
 				} else {
-					System.out.print("[ ]");
+					System.out.print("[  ]");
 				}
 			}
 			System.out.println("");
@@ -123,9 +136,12 @@ public class Tools {
 		if (DEBUG)
 			p (m);
 	}
-	
 	public static void printCounter (int[][] counterMap, int sleep){
-		if (DEBUG){
+		printCounter (counterMap, sleep, false);
+	}
+	
+	public static void printCounter (int[][] counterMap, int sleep, boolean debug){
+		if (debug){
 			int width = counterMap.length;
 			int height = counterMap[0].length;
 			for (int i=0;i<height;i++){

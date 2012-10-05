@@ -43,11 +43,14 @@ public class Pathfinder {
 		queue.push(from);
 		counterMap[from.x][from.y] = 1;
 		while (!queue.isEmpty()){
-			if (counterMap[to.x][to.y] > 0)
-				break;
 			Coords c = queue.pop();
-//			if (c.equals(to) && counterMap)
-//				break;
+			if (mode != WalkMode.WALK){
+				if (counterMap[to.x][to.y] > 0)
+					break;
+			}else{
+				if (c.equals(to))
+					break;
+			}
 			ArrayList<Coords> cells = AdjacentCells (c, board, mode);
 			for (int i=0; i<cells.size();i++){
 				Coords adjacentCell = cells.get(i);
@@ -60,10 +63,11 @@ public class Pathfinder {
 				else{
 					counterMap [adjacentCell.x][adjacentCell.y] = counterMap [c.x][c.y]+1;
 				}
+
 			}
 			for (Coords newCoords : cells)
 				queue.push(newCoords);
-			Tools.printCounter (counterMap, 30);
+			Tools.printCounter (counterMap, 0);
 		}
 
 		//p("to, x: " + to.x + " y: " + to.y);
@@ -71,6 +75,9 @@ public class Pathfinder {
 			if (!(counterMap[to.x][to.y] > 0))
 				return "";
 			String bestPath = extractPath (from, to, counterMap);
+			if (false){
+				System.out.println (mode+"path from "+from+" to "+to+":"+ bestPath);
+			}
 			return bestPath;
 		} catch (ArrayIndexOutOfBoundsException e){
 			return "";
