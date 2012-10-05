@@ -8,6 +8,7 @@ public interface Board extends Comparable<Board>{
 	}
 	
 	public Board clone();
+	public Board noBoxClone ();
 		
 	public void movePlayer (Direction dir);
 	

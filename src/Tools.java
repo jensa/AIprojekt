@@ -4,7 +4,7 @@ import java.util.ArrayList;
 public class Tools {
 	
 
-	public static final boolean DEBUG = false;
+	public static boolean DEBUG = false;
 
 	public static boolean[][] createMatrix (Board b){
 		boolean[][] bipartite = new boolean[b.getHeight()][b.getWidth()];
@@ -124,10 +124,12 @@ public class Tools {
 			p (m);
 	}
 	
-	public static void printCounter (int[][] counterMap){
-		if (DEBUG)
-			for (int i=0;i<counterMap.length;i++){
-				for (int j=0;j<counterMap[0].length;j++){
+	public static void printCounter (int[][] counterMap, int sleep){
+		if (DEBUG){
+			int width = counterMap.length;
+			int height = counterMap[0].length;
+			for (int i=0;i<height;i++){
+				for (int j=0;j<width;j++){
 					if (counterMap[j][i] > 9 || counterMap[j][i] < 0){
 						System.out.print("["+counterMap[j][i]+"]");
 					}else
@@ -136,6 +138,14 @@ public class Tools {
 				}
 				System.out.print("\n");
 			}
+			System.out.println ("-----------------");
+			try {
+				Thread.sleep(sleep);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		
 	}
 
 }

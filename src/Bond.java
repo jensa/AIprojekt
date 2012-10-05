@@ -34,10 +34,12 @@ public class Bond implements Agent{
 		boardHeight = board.getHeight ();
 		boardWidth = board.getWidth ();
 		guaranteedDeadlocks = Tools.createMatrix(solveBoard);
-		//		calculateAdditionalDeadlocks (board);
+		calculateAdditionalDeadlocks (board.noBoxClone());
 		//		deadlockMatrix = calculateDeadlock (board);
 		Tools.printBipartiteArray(guaranteedDeadlocks, boardHeight, boardWidth);
-
+		if (boardHeight > 1){
+			return "";
+		}
 		//		board.printMap();
 		System.out.println("original");
 		board.printMap();
@@ -74,11 +76,21 @@ public class Bond implements Agent{
 	 * @param b
 	 */
 	private void calculateAdditionalDeadlocks(Board b) {
-			for (int i=0;i<b.getWidth();i++){
-				for (int j=0;j<b.getHeight();j++){
-					for (Coords c : b.getGoals()){
-						Coords cell = new Coords (i,j);
-						moveBoxToCoords (cell, c, b, true);
+		for (int i=0;i<b.getHeight();i++){
+			for (int j=0;j<b.getWidth();j++){
+				Coords cell = new Coords (j,i);
+				if (b.getTileAt(cell) == Surf.wall || b.getTileAt(cell) == Surf.goal)
+					continue;
+				boolean foundPath = false;
+				for (Coords c : b.getGoals()){
+					String pullPath = Pathfinder.findPullablePath(c, cell, b);
+					if (!pullPath.equals("")){
+						foundPath = true;
+						break;
+					}
+				}
+				if (!foundPath){
+					guaranteedDeadlocks[i][j] = true;
 				}
 			}
 		}
@@ -109,7 +121,7 @@ public class Bond implements Agent{
 			}
 		}
 	}
-	
+
 	/**
 	 * Checks a board for deadlock situations
 	 * @param b
@@ -124,9 +136,9 @@ public class Bond implements Agent{
 		}
 		return false;
 	}
-	
+
 	/**
-	 * Performs some permutations of a state. Tries to move a box to any goals,
+	 * Performs some mutations of a state. Tries to move a box to any goals,
 	 * and moves the box one step in all possible directions.
 	 * 
 	 * TODO: moving the box to the goal usually does not work.
@@ -173,7 +185,7 @@ public class Bond implements Agent{
 	 * @return
 	 */
 	private Board moveBoxToCoords (Coords from, Coords to, Board board, boolean ignoreBoxes){
-		String pathToPos = findPath (from, to, board);
+		String pathToPos = Pathfinder.findPushablePath (from, to, board);
 		if (pathToPos == null)
 			return null;
 		char[] path = pathToPos.toCharArray();
@@ -246,7 +258,7 @@ public class Bond implements Agent{
 		if (!board.isTileWalkable(pushingPlayerPosition, disregardBoxes) || !board.isTileWalkable(to, disregardBoxes))
 			return null;
 
-		String pathToPos = findPath (player, pushingPlayerPosition, board);
+		String pathToPos = Pathfinder.findPath (player, pushingPlayerPosition, board, Pathfinder.WalkMode.WALK);
 		if (pathToPos == null)
 			return null;
 
@@ -277,7 +289,7 @@ public class Bond implements Agent{
 		return newBoard;
 	}
 
-	
+
 	/**
 	 * Finds a walkable path from A to B, and returns it as a series of direction chars (U,D,L,R)
 	 * @param from
@@ -310,9 +322,11 @@ public class Bond implements Agent{
 			for (Coords newCoords : cells)
 				queue.push(newCoords);
 		}
-		Tools.printCounter (counterMap);
 		//p("to, x: " + to.x + " y: " + to.y);
-		return extractPath (from, to, counterMap);
+		String bestPath = extractPath (from, to, counterMap);
+		if (bestPath.equals(""))
+			Tools.printCounter (counterMap, 300);
+		return bestPath;
 	}
 
 	private static String extractPath(Coords from, Coords to, int[][] counterMap) {

@@ -2,8 +2,9 @@ import java.util.ArrayList;
 import java.util.Stack;
 
 
+
 public class Pathfinder {
-	
+
 	/*
 	 * Disclaimer:
 	 * The pushable/pullabe paths for now at least assume that if a box has two opposite
@@ -14,21 +15,21 @@ public class Pathfinder {
 	 * I don't think this is a problem, becuase the path chosen will always be the shortest possible,
 	 * so weird (and unpushable) paths will be excluded by default. I think.
 	 */
-	
+
 	public enum WalkMode { WALK, PUSH, PULL }
-	
+
 	public static String findPullablePath (Coords from, Coords to, Board board){
 		return findPath (from, to, board, WalkMode.PULL);
 	}
-	
+
 	public static String findPushablePath (Coords from, Coords to, Board board){
 		return findPath (from, to, board, WalkMode.PUSH);
 	}
-	
+
 	public static String findWalkablePath (Coords from, Coords to, Board board){
 		return findPath (from, to, board, WalkMode.WALK);
 	}
-	
+
 	/**
 	 * Finds a walkable path from A to B, and returns it as a series of direction chars (U,D,L,R)
 	 * @param from
@@ -42,9 +43,11 @@ public class Pathfinder {
 		queue.push(from);
 		counterMap[from.x][from.y] = 1;
 		while (!queue.isEmpty()){
-			Coords c = queue.pop();
-			if (c.equals(to))
+			if (counterMap[to.x][to.y] > 0)
 				break;
+			Coords c = queue.pop();
+//			if (c.equals(to) && counterMap)
+//				break;
 			ArrayList<Coords> cells = AdjacentCells (c, board, mode);
 			for (int i=0; i<cells.size();i++){
 				Coords adjacentCell = cells.get(i);
@@ -60,10 +63,18 @@ public class Pathfinder {
 			}
 			for (Coords newCoords : cells)
 				queue.push(newCoords);
+			Tools.printCounter (counterMap, 30);
 		}
-		Tools.printCounter (counterMap);
+
 		//p("to, x: " + to.x + " y: " + to.y);
-		return extractPath (from, to, counterMap);
+		try{
+			if (!(counterMap[to.x][to.y] > 0))
+				return "";
+			String bestPath = extractPath (from, to, counterMap);
+			return bestPath;
+		} catch (ArrayIndexOutOfBoundsException e){
+			return "";
+		}
 	}
 
 	private static String extractPath(Coords from, Coords to, int[][] counterMap) {
@@ -99,11 +110,11 @@ public class Pathfinder {
 			dir = "D";
 		}
 		if (dir=="")
-			return null;
+			return "";
 		else
 			return extractPath(from, new Coords(nextX, nextY), counterMap)+dir;
 	}
-	
+
 	/**
 	 * Returnera en lista på rutor vi kan stå på.
 	 * @param cell
@@ -117,21 +128,32 @@ public class Pathfinder {
 		default: return walkableAdjacentCells (cell, board);
 		}
 	}
-	
+
 	private static ArrayList<Coords> pullableAdjacentCells(Coords cell,
 			Board b) {
 		ArrayList<Coords> cells = new ArrayList<Coords> ();
-		Coords up = new Coords (cell.x-1, cell.y);
-		Coords down = new Coords (cell.x+1, cell.y);
-		Coords left = new Coords (cell.x, cell.y-1);
-		Coords right = new Coords (cell.x, cell.y+1);
-		if (b.isTileWalkable(up) && b.isTileWalkable(down)){
-			addCell (up, cells, b);
-			addCell (down, cells, b);
-		}
-		if (b.isTileWalkable(left) && b.isTileWalkable(right)){
+		Coords left = new Coords (cell.x-1, cell.y);
+		Coords left2 = new Coords (cell.x-2, cell.y);
+		if (b.isTileWalkable(left) && b.isTileWalkable(left2)){
 			addCell (left, cells, b);
+		}
+
+		Coords right = new Coords (cell.x+1, cell.y);
+		Coords right2 = new Coords (cell.x+2, cell.y);
+		if (b.isTileWalkable(right) && b.isTileWalkable(right2)){
 			addCell (right, cells, b);
+		}
+
+		Coords up = new Coords (cell.x, cell.y-1);
+		Coords up2 = new Coords (cell.x, cell.y-2);
+		if (b.isTileWalkable(up) && b.isTileWalkable(up2)){
+			addCell (up, cells, b);
+		}
+
+		Coords down = new Coords (cell.x, cell.y+1);
+		Coords down2 = new Coords (cell.x, cell.y+2);
+		if (b.isTileWalkable(down) && b.isTileWalkable(down2)){
+			addCell (down, cells, b);
 		}
 		return cells;
 	}

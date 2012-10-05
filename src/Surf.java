@@ -40,6 +40,26 @@ public class Surf implements Board{
 			addRow (rows[i], i);
 		}
 	}
+	
+	public Surf(Board b, boolean noBoxes) {
+		goals = (ArrayList<Coords>) b.getGoalsList().clone();
+		path = b.getPath();
+		boxes = new ArrayList<Coords> ();
+		for (Coords c : b.getBoxHash())
+			boxes.add(new Coords (c.x, c.y));
+		width = b.getWidth();
+		height = b.getHeight();
+		boardMatrix = new char[width][height];
+		for (int i = 0; i < this.width; i++) {
+			for (int j = 0; j < this.height; j++) {
+				if (b.getBackingMatrix()[i][j] == boxGoal || b.getBackingMatrix()[i][j] == box)
+					this.boardMatrix[i][j] = empty;
+				else
+					this.boardMatrix[i][j] = b.getBackingMatrix()[i][j];
+			}
+		}
+		this.playerPosition = new Coords(b.getPlayer().x, b.getPlayer().y);
+	}
 
 	public Surf(Board b) {
 		goals = (ArrayList<Coords>) b.getGoalsList().clone();
@@ -67,6 +87,12 @@ public class Surf implements Board{
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	@Override
+	public Board noBoxClone (){
+		return new Surf (this, true);
+		
 	}
 
 	private void addRow (String row, int rowNum){
@@ -342,15 +368,6 @@ public class Surf implements Board{
 		for (Coords c : goals){
 			if (getTileAt (c) == boxGoal)
 				kuk += 10;
-		}
-		for (Coords c : goals){
-			if (Bond.findPath(playerPosition, c, this) != null)
-				kuk++;
-		}
-
-		if (kuk > 5){
-			int lol = 0;
-			lol = lol+1;
 		}
 		return kuk+scoreMod;
 
