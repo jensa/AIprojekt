@@ -6,6 +6,88 @@ public class Tools {
 
 	public static boolean DEBUG = false;
 
+	public static boolean[][] createPullMatrix(Board b) {
+		boolean print = false;
+		boolean[][] pull = new boolean[b.getHeight()][b.getWidth()];
+		for (int i=0;i<b.getHeight();i++){
+			if (print) {
+				System.out.println();
+				System.out.print("[" + i + "]");
+			}
+			for (int j=0;j<b.getWidth();j++){
+					Coords c = new Coords(i, j);
+					char tmpTile = b.getTileAt(c);
+					if (tmpTile == Surf.box || tmpTile == Surf.boxGoal || tmpTile == Surf.empty || tmpTile == Surf.goal || tmpTile == Surf.player || tmpTile == Surf.playerGoal) {
+						//its something we can walk on or move.
+						pull[j][i] = false;
+						if (print)
+							System.out.print("[X]");
+					} else {
+						pull[j][i] = true;
+						if (print)
+							System.out.print("[ ]");
+					}
+					
+			}
+		}
+		
+		boolean[][] returnMatrix = new boolean[b.getHeight()][b.getWidth()];
+		Coords[] goals = b.getGoals();
+		for (int i = 0; i < goals.length; i++) {
+			Coords goal = goals[i];
+			pull(returnMatrix, goals[i], b);
+			
+			
+		}
+		return returnMatrix;
+	}
+	
+	private static void pull(boolean[][] m, Coords start, Board b) {
+		Coords c1 = new Coords(start.x+1, start.y);
+		Coords c2 = new Coords(start.x+2, start.y);
+		Coords c3 = new Coords(start.x-1, start.y);
+		Coords c4 = new Coords(start.x-2, start.y);
+		Coords c5 = new Coords(start.x, start.y+1);
+		Coords c6 = new Coords(start.x, start.y+2);
+		Coords c7 = new Coords(start.x, start.y-1);
+		Coords c8 = new Coords(start.x, start.y-2);
+		
+		Coords c = c1;
+		Coords n = c2;
+		if (!m[c.x][c.y] && canWalkOn(b, c) && canWalkOn(b, n)) {
+			m[c.x][c.y] = true;
+			pull(m, c, b);
+		}
+		c = c3;
+		n = c4;
+		if (!m[c.x][c.y] && canWalkOn(b, c) && canWalkOn(b, n)) {
+			m[c.x][c.y] = true;
+			pull(m, c, b);
+		}
+		c = c5;
+		n = c6;
+		if (!m[c.x][c.y] && canWalkOn(b, c) && canWalkOn(b, n)) {
+			m[c.x][c.y] = true;
+			pull(m, c, b);
+		}
+		c = c7;
+		n = c8;
+		if (!m[c.x][c.y] && canWalkOn(b, c) && canWalkOn(b, n)) {
+			m[c.x][c.y] = true;
+			pull(m, c, b);
+		}
+		
+	}
+	
+	private static boolean canWalkOn(Board b, Coords i) {
+		char tmpTile = b.getTileAt(i);
+		if (tmpTile == Surf.box || tmpTile == Surf.boxGoal || tmpTile == Surf.empty || tmpTile == Surf.goal || tmpTile == Surf.player || tmpTile == Surf.playerGoal) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
 	public static boolean[][] createMatrix (Board b){
 		boolean[][] bipartite = new boolean[b.getHeight()][b.getWidth()];
 		for (int i=0;i<b.getHeight();i++){
@@ -63,7 +145,7 @@ public class Tools {
 
 	public static void printBipartiteArray(boolean[][] bipartite, 
 			int boardHeight, int boardWidth) {
-		System.out.print("ÿ x:");
+		System.out.print("ï¿½ x:");
 		for ( int w = 0;w<boardWidth;w++){
 			if (w<10)
 				System.out.print ("[0"+w+"]");
@@ -107,7 +189,7 @@ public class Tools {
 	}
 	
 	public static Board.Direction getDirection(Coords from, Coords to) {
-		// de måste vara en ifrån
+		// de mï¿½ste vara en ifrï¿½n
 		if (from.x + 1 == to.x && from.y == to.y) {
 			return Board.Direction.RIGHT;
 		}

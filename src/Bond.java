@@ -24,6 +24,7 @@ public class Bond implements Agent{
 	Stack<Board> states = new Stack<Board>();
 	HashSet<String> passedStates = new HashSet<String>();
 	private boolean[][] guaranteedDeadlocks;
+	private boolean[][] pull;
 	//	static boolean[][] deadlockMatrix;
 
 
@@ -33,6 +34,9 @@ public class Bond implements Agent{
 		System.out.println("solve");
 		boardHeight = board.getHeight ();
 		boardWidth = board.getWidth ();
+		pull = Tools.createPullMatrix(board);
+		Tools.printBipartiteArray(pull, boardHeight, boardWidth);
+		
 		guaranteedDeadlocks = Tools.createMatrix(solveBoard);
 		calculateAdditionalDeadlocks (board.noBoxClone());
 		//		deadlockMatrix = calculateDeadlock (board);
@@ -60,15 +64,14 @@ public class Bond implements Agent{
 					for (Board b : moveBox(state,c))
 						states.push(b);
 				}
-
-
 			}
 		}
 		return path;
 	}
+	
 	/**
 	 * TODO:
-	 * Intended to claculate bipartite deadlocks before starting,
+	 * Intended to calculate bipartite deadlocks before starting,
 	 * by pulling boxes from all goals to all tiles, and filling out
 	 * guaranteedDeadlocks afterwards with unvisited tiles.
 	 * Before this can work however, we need a findPullablePath (from, to)
@@ -95,7 +98,7 @@ public class Bond implements Agent{
 		}
 	}
 	/**
-	 * Performs a walk thrhough a given path,
+	 * Performs a walk through a given path,
 	 * useful mostly for debugging
 	 * @param path
 	 * @param board
