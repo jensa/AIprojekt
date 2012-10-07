@@ -47,7 +47,8 @@ public class Surf implements Board{
 		goals = (ArrayList<Coords>) b.getGoalsList().clone();
 		if (!noBoxes){
 //		path = new StringBuilder(b.getPath());
-			path =b.getPath();
+			path = new String();
+			path = b.getPath();
 		}
 		boxes = new ArrayList<Coords> ();
 		for (Coords c : b.getBoxHash())

@@ -7,42 +7,18 @@ public class Tools {
 	public static boolean DEBUG = false;
 
 	public static boolean[][] createPullMatrix(Board b) {
-		boolean print = false;
-		boolean[][] pull = new boolean[b.getHeight()][b.getWidth()];
-		for (int i=0;i<b.getHeight();i++){
-			if (print) {
-				System.out.println();
-				System.out.print("[" + i + "]");
-			}
-			for (int j=0;j<b.getWidth();j++){
-					Coords c = new Coords(i, j);
-					char tmpTile = b.getTileAt(c);
-					if (tmpTile == Surf.box || tmpTile == Surf.boxGoal || tmpTile == Surf.empty || tmpTile == Surf.goal || tmpTile == Surf.player || tmpTile == Surf.playerGoal) {
-						//its something we can walk on or move.
-						pull[j][i] = false;
-						if (print)
-							System.out.print("[X]");
-					} else {
-						pull[j][i] = true;
-						if (print)
-							System.out.print("[ ]");
-					}
-					
-			}
-		}
-		
 		boolean[][] returnMatrix = new boolean[b.getHeight()][b.getWidth()];
 		Coords[] goals = b.getGoals();
 		for (int i = 0; i < goals.length; i++) {
 			Coords goal = goals[i];
-			pull(returnMatrix, goals[i], b);
-			
+			returnMatrix = pull(returnMatrix, goals[i], b);
 			
 		}
 		return returnMatrix;
 	}
 	
-	private static void pull(boolean[][] m, Coords start, Board b) {
+	private static boolean[][] pull(boolean[][] m, Coords start, Board b) {
+		m[start.x][start.y] = true; 
 		Coords c1 = new Coords(start.x+1, start.y);
 		Coords c2 = new Coords(start.x+2, start.y);
 		Coords c3 = new Coords(start.x-1, start.y);
@@ -56,27 +32,31 @@ public class Tools {
 		Coords n = c2;
 		if (!m[c.x][c.y] && canWalkOn(b, c) && canWalkOn(b, n)) {
 			m[c.x][c.y] = true;
-			pull(m, c, b);
+			Tools.printBipartiteArray(m, m.length, m[0].length);
+			m = pull(m, c, b);
 		}
 		c = c3;
 		n = c4;
 		if (!m[c.x][c.y] && canWalkOn(b, c) && canWalkOn(b, n)) {
 			m[c.x][c.y] = true;
-			pull(m, c, b);
+			Tools.printBipartiteArray(m, m.length, m[0].length);
+			m = pull(m, c, b);
 		}
 		c = c5;
 		n = c6;
 		if (!m[c.x][c.y] && canWalkOn(b, c) && canWalkOn(b, n)) {
 			m[c.x][c.y] = true;
-			pull(m, c, b);
+			Tools.printBipartiteArray(m, m.length, m[0].length);
+			m = pull(m, c, b);
 		}
 		c = c7;
 		n = c8;
 		if (!m[c.x][c.y] && canWalkOn(b, c) && canWalkOn(b, n)) {
 			m[c.x][c.y] = true;
-			pull(m, c, b);
+			Tools.printBipartiteArray(m, m.length, m[0].length);
+			m = pull(m, c, b);
 		}
-		
+		return m;
 	}
 	
 	private static boolean canWalkOn(Board b, Coords i) {
@@ -160,7 +140,7 @@ public class Tools {
 				System.out.print ("["+i+"]");
 			for (int j = 0; j < boardWidth; j++) {
 				if (bipartite[i][j]) {
-					System.out.print("[]");
+					System.out.print("[XX]");
 				} else {
 					System.out.print("[  ]");
 				}

@@ -24,7 +24,7 @@ public class Bond implements Agent{
 	Stack<Board> states = new Stack<Board>();
 	HashSet<String> passedStates = new HashSet<String>();
 	private boolean[][] guaranteedDeadlocks;
-	private boolean[][] pull;
+	private boolean[][] pullMatrix;
 	//	static boolean[][] deadlockMatrix;
 
 
@@ -34,8 +34,8 @@ public class Bond implements Agent{
 		System.out.println("solve");
 		boardHeight = board.getHeight ();
 		boardWidth = board.getWidth ();
-		pull = Tools.createPullMatrix(board);
-		Tools.printBipartiteArray(pull, boardHeight, boardWidth);
+		pullMatrix = Tools.createPullMatrix(board);
+		Tools.printBipartiteArray(pullMatrix, boardHeight, boardWidth);
 		
 		guaranteedDeadlocks = Tools.createMatrix(solveBoard);
 		calculateAdditionalDeadlocks (board.noBoxClone());
@@ -213,6 +213,14 @@ public class Bond implements Agent{
 		if (board != null)
 			boards.add(board);
 	}
+	
+	private boolean isDeadLockBoard(Board b, Coords to) {
+		if (guaranteedDeadlocks[to.y][to.x])
+			return true;
+		if (!pullMatrix[to.x][to.y])
+			return true;
+		return false;
+	}
 
 	private Board moveBox(Coords inFrom, Board.Direction inTo, Board board) {
 		return moveBox(inFrom, inTo, board, false);
@@ -237,9 +245,9 @@ public class Bond implements Agent{
 		Coords from = new Coords (inFrom.x, inFrom.y);
 		Coords to = CoordHelper.nextCoordInDirection(inTo, from);
 
-		if (guaranteedDeadlocks[to.y][to.x])
+		if (isDeadLockBoard(board, to))
 			return null;
-
+		
 		Coords pushingPlayerPosition = Tools.getPushingPlayerPosition (inFrom, to);
 		if (!board.isTileWalkable(pushingPlayerPosition, disregardBoxes) || !board.isTileWalkable(to, disregardBoxes))
 			return null;
@@ -263,7 +271,7 @@ public class Bond implements Agent{
 		while (BondHeuristics.tunnelPush (from, to, newBoard)){
 			newBoard.movePlayer(inTo);
 		}
-		newBoard.printMap();
+		//newBoard.printMap();
 		return newBoard;
 	}
 }
