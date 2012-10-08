@@ -98,6 +98,15 @@ public class Bond implements Agent{
 			}
 		}
 	}
+
+	private Board.Direction[] pushBoxPath(Coords fromCoords, Coords toCoords, Board b) {
+	    Coords box = fromCoords;
+	    
+		
+	    
+	    return null;
+	}
+	
 	/**
 	 * Performs a walk through a given path,
 	 * useful mostly for debugging
@@ -140,8 +149,11 @@ public class Bond implements Agent{
 	private ArrayList<Board> moveBox(Board board,Coords inFrom) {
 		ArrayList<Board> goalMoves = new ArrayList<Board> ();//moveBoxToGoal (board, inFrom, false); //
 		goalMoves.addAll(moveBoxInAllDirections (board, inFrom));
+		// Move all boxes to a goal. 
+		//goalMoves.add(moveBoxToGoal(board, inFrom));
 		return goalMoves;
 	}
+	
 	/**
 	 * Tries to move a box to all goals, and returns a list of the states where this was successful
 	 * @param board
@@ -160,6 +172,8 @@ public class Bond implements Agent{
 		}
 		return boards;
 	}
+
+	
 	/**
 	 * Tries to move a box to given coords.
 	 * TODO:

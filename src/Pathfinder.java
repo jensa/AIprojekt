@@ -30,6 +30,39 @@ public class Pathfinder {
 		return findPath (from, to, board, WalkMode.WALK);
 	}
 
+	public static String findPushablePath2(Coords from, Coords to, Board board) {
+		Board b = board.clone();
+		Stack<Coords> queue = new Stack<Coords>();
+		int[][] counterMap = new int[board.getWidth()][board.getHeight()];
+		queue.push(from);
+		int lastCounter = 1;
+		counterMap[from.x][from.y] = lastCounter;
+		
+		while (!queue.isEmpty()) {
+			Coords c = queue.pop();
+		
+			ArrayList<Coords> adjacent = AdjacentCells(c, board, WalkMode.PUSH);
+			lastCounter += 1;
+			for (Coords a : adjacent){
+				counterMap[a.x][a.y] = lastCounter;
+				queue.push(a);
+			}
+		}
+		
+		if (counterMap[to.x][to.y]<1) {
+			// NO path to.
+			return "";
+		}
+		
+		queue = new Stack<Coords>();
+		queue.add(from);
+		
+		while (!queue.isEmpty()) {
+			
+		}
+		
+		return "";
+	}
 	/**
 	 * Finds a walkable path from A to B, and returns it as a series of direction chars (U,D,L,R)
 	 * @param from
@@ -123,7 +156,7 @@ public class Pathfinder {
 	}
 
 	/**
-	 * Returnera en lista på rutor vi kan stå på.
+	 * Returnera en lista pï¿½ rutor vi kan stï¿½ pï¿½.
 	 * @param cell
 	 * @return
 	 */
@@ -192,7 +225,7 @@ public class Pathfinder {
 	}
 
 	/**
-	 * Returnera en lista på rutor vi kan stå på.
+	 * Returnera en lista pï¿½ rutor vi kan stï¿½ pï¿½.
 	 * @param cell
 	 * @return
 	 */
