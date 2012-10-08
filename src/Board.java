@@ -40,6 +40,10 @@ public interface Board extends Comparable<Board>{
 	
 	public ArrayList<Coords> getGoalsList();
 	
+	public void removeGoal (Coords goal);
+	
+	public void removeBox (Coords box);
+	
 	public String hash();
 	
 	public Path getPath ();

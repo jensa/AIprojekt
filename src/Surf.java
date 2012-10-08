@@ -202,6 +202,16 @@ public class Surf implements Board{
 		}
 		return hash;*/
 	}
+	
+	public void removeBox (Coords box){
+		boxes.remove(box);
+		boardMatrix[box.x][box.y] = wall;
+	}
+	
+	public void removeGoal (Coords goal){
+		boxes.remove(goal);
+		boardMatrix[goal.x][goal.y] = wall;
+	}
 
 	private boolean isTileGoal(Coords c) {
 		if (goals.contains(c))

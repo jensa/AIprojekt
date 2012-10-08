@@ -255,7 +255,11 @@ public class Bond implements Agent{
 		newBoard.movePlayer(inTo);
 		if (board.getTileAt(from) == Surf.boxGoal && newBoard.getTileAt(to) == Surf.boxGoal)
 			newBoard.modScore(-5);
-
+		if (BondHeuristics.goalCorral (to, newBoard)){
+			newBoard.removeBox(to);
+			newBoard.removeGoal(to);
+			newBoard.modScore(Integer.MAX_VALUE/2);
+		}
 		while (!ignoreTunnels && BondHeuristics.tunnelPush (from, to, inTo, newBoard)){
 			//			System.out.println("Tunnel detected. pushing "+inTo);
 			newBoard.movePlayer(inTo);
@@ -264,7 +268,7 @@ public class Bond implements Agent{
 			to = CoordHelper.nextCoordInDirection(inTo, from);
 			newBoard.modScore(10);
 		}
-		//				newBoard.printMap();
+						newBoard.printMap();
 		return newBoard;
 	}
 }

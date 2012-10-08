@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 
 public class BondHeuristics {
 	/**
@@ -32,23 +34,38 @@ public class BondHeuristics {
 			l = mc(from.x, from.y-1); r = mc(from.x, from.y+1);
 			bl = mc(from.x+1, from.y-1); br = mc(from.x+1, from.y+1);t = mc (from.x+2, from.y-2);break;
 		}
-			if (b.getTileAt(l) == Surf.wall && b.getTileAt(r) == Surf.wall){
-				if (b.getTileAt(bl) == Surf.wall && b.getTileAt(br) == Surf.wall){
-					if (b.getTileAt(t) == Surf.wall){ //box is boxed in, hopefully it wont try to do this unless there is a goal
-						if( b.getTileAt(to) == Surf.goal)
+		if (b.getTileAt(l) == Surf.wall && b.getTileAt(r) == Surf.wall){
+			if (b.getTileAt(bl) == Surf.wall && b.getTileAt(br) == Surf.wall){
+				if (b.getTileAt(t) == Surf.wall){ //box is boxed in, hopefully it wont try to do this unless there is a goal
+					if( b.getTileAt(to) == Surf.goal)
 						b.modScore(1000000); // box is in a place where it is always correct
-						return false;
-					}
-				} else if (b.getTileAt(bl) == Surf.wall || b.getTileAt(br) == Surf.wall){
-					if (b.getTileAt(t) != Surf.wall)
-						return true;
+					return false;
 				}
+			} else if (b.getTileAt(bl) == Surf.wall || b.getTileAt(br) == Surf.wall){
+				if (b.getTileAt(t) != Surf.wall)
+					return true;
 			}
+		}
+		return false;
+	}
+
+	private static Coords mc (int x, int y){
+		return new Coords (x, y);
+	}
+
+	public static boolean goalCorral(Coords to, Board newBoard) {
+		if (newBoard.getTileAt(to) == Surf.boxGoal){
+			return Tools.createAdjacentWallCells(to, newBoard).size() > 2;
+		}
+		return false;
+	}
+
+	public static boolean deathSquare (Coords box, Board b){
 		return false;
 	}
 	
-	private static Coords mc (int x, int y){
-		return new Coords (x, y);
+	private static ArrayList<Coords> boxCorner (Board.Direction dir, Coords box){
+		return null;
 	}
 
 }
