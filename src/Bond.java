@@ -253,6 +253,9 @@ public class Bond implements Agent{
 		newBoard.getPlayer().x = pushingPlayerPosition.x;
 		newBoard.getPlayer().y = pushingPlayerPosition.y;
 		newBoard.movePlayer(inTo);
+		if (BondHeuristics.deathSquare(to, newBoard)){
+			return null;
+		}
 		if (board.getTileAt(from) == Surf.boxGoal && newBoard.getTileAt(to) == Surf.boxGoal)
 			newBoard.modScore(-5);
 		if (BondHeuristics.goalCorral (to, newBoard)){
@@ -268,7 +271,7 @@ public class Bond implements Agent{
 			to = CoordHelper.nextCoordInDirection(inTo, from);
 			newBoard.modScore(10);
 		}
-						newBoard.printMap();
+		newBoard.printMap();
 		return newBoard;
 	}
 }

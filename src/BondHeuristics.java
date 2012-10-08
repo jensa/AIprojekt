@@ -61,11 +61,33 @@ public class BondHeuristics {
 	}
 
 	public static boolean deathSquare (Coords box, Board b){
-		return false;
+		if (b.getTileAt(box) == Surf.goal || b.getTileAt(box) == Surf.boxGoal)
+			return false;
+		boolean nw = isClump (getBoxCorner (-1,-1,box,b),b);
+		boolean ne = isClump (getBoxCorner (1,-1,box,b),b);
+		boolean sw = isClump (getBoxCorner (-1,1,box,b),b);
+		boolean se = isClump (getBoxCorner (1,1,box,b),b);
+		return nw || ne || sw || se;
+
 	}
-	
-	private static ArrayList<Coords> boxCorner (Board.Direction dir, Coords box){
-		return null;
+
+	private static ArrayList<Coords> getBoxCorner (int xMod, int yMod, Coords box, Board b){
+		ArrayList<Coords> corner = new ArrayList<Coords> ();
+		corner.add(new Coords(box.x+xMod, box.y+yMod));
+		corner.add(new Coords(box.x, box.y+yMod));
+		corner.add(new Coords(box.x+xMod, box.y));
+		return corner;
 	}
+
+	private static boolean isClump (ArrayList<Coords> square, Board b){
+		for (Coords c : square){
+			char tile = b.getTileAt(c);
+			if (!( tile== Surf.wall ||tile == Surf.boxGoal || tile == Surf.box))
+				return false;
+		}
+		return true;
+	}
+
+
 
 }
