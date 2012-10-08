@@ -33,19 +33,19 @@ public class Bond implements Agent{
 
 
 		Board board = solveBoard;
-//		System.out.println("solve");
+		//		System.out.println("solve");
 		boardHeight = board.getHeight ();
 		boardWidth = board.getWidth ();
 		guaranteedDeadlocks = Tools.createMatrix(solveBoard);
 		//		deadlockMatrix = calculateDeadlock (board);
 		Tools.printBipartiteArray(guaranteedDeadlocks, boardHeight, boardWidth);
 		if (boardHeight > 1){
-//			Tools.doWalk("LDLRDRUDRRUDRRDDLLLLLUDRRRRRUULLLLULLDLLURUUUURRRRRDDDDLDRLLLURDRRUUUUULLLLLDDDDRLUUUURRRRRDDDDDLLLLULUUUURRRRRDDDDDLLURDRULDLLDDRRRRRUULLLRRRDDLLLLLUULULUUUURRRRRDDDDLLLRRRUUUULLLLLDDDDLDRUUUUURRRRRDDDDLLLUURDLDDDDRRRRRUUUL", board);
-//			return "LDLRDRUDRRUDRRDDLLLLLUDRRRRRUULLLLULLDLLURUUUURRRRRDDDDLDRLLLURDRRUUUUULLLLLDDDDRLUUUURRRRRDDDDDLLLLULUUUURRRRRDDDDDLLURDRULDLLDDRRRRRUULLLRRRDDLLLLLUULULUUUURRRRRDDDDLLLRRRUUUULLLLLDDDDLDRUUUUURRRRRDDDDLLLUURDLDDDDRRRRRUUUL";
+			//			Tools.doWalk("LDLRDRUDRRUDRRDDLLLLLUDRRRRRUULLLLULLDLLURUUUURRRRRDDDDLDRLLLURDRRUUUUULLLLLDDDDRLUUUURRRRRDDDDDLLLLULUUUURRRRRDDDDDLLURDRULDLLDDRRRRRUULLLRRRDDLLLLLUULULUUUURRRRRDDDDLLLRRRUUUULLLLLDDDDLDRUUUUURRRRRDDDDLLLUURDLDDDDRRRRRUUUL", board);
+			//			return "LDLRDRUDRRUDRRDDLLLLLUDRRRRRUULLLLULLDLLURUUUURRRRRDDDDLDRLLLURDRRUUUUULLLLLDDDDRLUUUURRRRRDDDDDLLLLULUUUURRRRRDDDDDLLURDRULDLLDDRRRRRUULLLRRRDDLLLLLUULULUUUURRRRRDDDDLLLRRRUUUULLLLLDDDDLDRUUUUURRRRRDDDDLLLUURDLDDDDRRRRRUUUL";
 		}
 		//		board.printMap();
-//		System.out.println("original");
-//		board.printMap();
+		//		System.out.println("original");
+		//		board.printMap();
 		states.add(board);
 		String path = "";
 		while (!states.isEmpty()) {
@@ -54,7 +54,7 @@ public class Bond implements Agent{
 				continue;
 			if (state.isSolved()) {
 				System.out.println("We did it");
-//				state.printMap();
+				//				state.printMap();
 				path = state.getPath().toString();
 				break;
 			} else {
@@ -69,22 +69,14 @@ public class Bond implements Agent{
 					e.printStackTrace();
 				}
 				for (Coords c : state.getBoxes()) {
-					if (state.getGoalsList().contains(c)){
-						for (Board b : moveBox(state,c))
-							states.offer(b);
-					}
-				}
-				for (Coords c : state.getBoxes()) {
-					if (!state.getGoalsList().contains(c)){
-						for (Board b : moveBox(state,c))
-							states.offer(b);
-					}
+					for (Board b : moveBox(state,c))
+						states.offer(b);
 				}
 
 
 			}
 		}
-//		System.out.println ("Solution: "+path);
+		//		System.out.println ("Solution: "+path);
 		//		Tools.doWalk(path, board);
 		return path;
 	}
@@ -95,10 +87,10 @@ public class Bond implements Agent{
 		if (matches == null || matches.length < 1)
 			return null;
 		Board newBoard = state.clone();
-//		System.out.println ("Found "+matches.length+" matches for map:");
-//		for (CoordPair p : matches)
-//			System.out.println(p.toString()+": "+p.p.toString());
-//		newBoard.printMap();
+		//		System.out.println ("Found "+matches.length+" matches for map:");
+		//		for (CoordPair p : matches)
+		//			System.out.println(p.toString()+": "+p.p.toString());
+		//		newBoard.printMap();
 		Coords from = matches[0].from;
 
 		ArrayList<Board> matchStates = new ArrayList<Board> ();
@@ -115,8 +107,8 @@ public class Bond implements Agent{
 			matches = Matcher.getMatch(moved);
 
 		}
-//		System.out.println ("After moving:");
-//		newBoard.printMap();
+		//		System.out.println ("After moving:");
+		//		newBoard.printMap();
 		return matchStates;
 	}
 
@@ -262,7 +254,7 @@ public class Bond implements Agent{
 		newBoard.getPlayer().y = pushingPlayerPosition.y;
 		newBoard.movePlayer(inTo);
 		if (board.getTileAt(from) == Surf.boxGoal && newBoard.getTileAt(to) == Surf.boxGoal)
-			newBoard.modScore(-1000);
+			newBoard.modScore(-5);
 
 		while (!ignoreTunnels && BondHeuristics.tunnelPush (from, to, inTo, newBoard)){
 			//			System.out.println("Tunnel detected. pushing "+inTo);

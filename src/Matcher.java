@@ -1,10 +1,5 @@
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-
-import flowMatch.Edge;
-import flowMatch.Graph;
-import flowMatch.MaxFlow;
 
 /**
  * Looks like shit, copied from my ADK Ford-Fulkerson lab solution.
@@ -86,7 +81,7 @@ public class Matcher {
 		}
 		int[] caps = new int[numEdges];
 		Arrays.fill(caps, 1);
-		MaxFlow maxFlow = new flowMatch.MaxFlow ();
+		MaxFlow maxFlow = new MaxFlow ();
 		Graph g = maxFlow.run(froms, tos, caps,numVerts, src, sink, numEdges);
 		return getSolution (g, numEdges, src, sink, goals, boxes, edgesA, edgesB, boxVerts, goalVerts, b);
 
