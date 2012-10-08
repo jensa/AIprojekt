@@ -24,7 +24,6 @@ public class Bond implements Agent{
 	Stack<Board> states = new Stack<Board>();
 	HashSet<String> passedStates = new HashSet<String>();
 	private boolean[][] guaranteedDeadlocks;
-	private boolean[][] pullMatrix;
 	//	static boolean[][] deadlockMatrix;
 
 
@@ -34,9 +33,6 @@ public class Bond implements Agent{
 		System.out.println("solve");
 		boardHeight = board.getHeight ();
 		boardWidth = board.getWidth ();
-		pullMatrix = Tools.createPullMatrix(board);
-		Tools.printBipartiteArray(pullMatrix, boardHeight, boardWidth);
-		
 		guaranteedDeadlocks = Tools.createMatrix(solveBoard);
 		calculateAdditionalDeadlocks (board.noBoxClone());
 		//		deadlockMatrix = calculateDeadlock (board);
@@ -51,7 +47,6 @@ public class Bond implements Agent{
 		String path = "";
 		while (!states.isEmpty()) {
 			Board state = states.pop();
-			state.printMap();
 			if (passedStates.contains(state.hash()))
 				continue;
 			if (state.isSolved()) {
@@ -65,14 +60,15 @@ public class Bond implements Agent{
 					for (Board b : moveBox(state,c))
 						states.push(b);
 				}
+
+
 			}
 		}
 		return path;
 	}
-	
 	/**
 	 * TODO:
-	 * Intended to calculate bipartite deadlocks before starting,
+	 * Intended to claculate bipartite deadlocks before starting,
 	 * by pulling boxes from all goals to all tiles, and filling out
 	 * guaranteedDeadlocks afterwards with unvisited tiles.
 	 * Before this can work however, we need a findPullablePath (from, to)
@@ -98,17 +94,8 @@ public class Bond implements Agent{
 			}
 		}
 	}
-
-	private Board.Direction[] pushBoxPath(Coords fromCoords, Coords toCoords, Board b) {
-	    Coords box = fromCoords;
-	    
-		
-	    
-	    return null;
-	}
-	
 	/**
-	 * Performs a walk through a given path,
+	 * Performs a walk thrhough a given path,
 	 * useful mostly for debugging
 	 * @param path
 	 * @param board
@@ -149,11 +136,8 @@ public class Bond implements Agent{
 	private ArrayList<Board> moveBox(Board board,Coords inFrom) {
 		ArrayList<Board> goalMoves = new ArrayList<Board> ();//moveBoxToGoal (board, inFrom, false); //
 		goalMoves.addAll(moveBoxInAllDirections (board, inFrom));
-		// Move all boxes to a goal. 
-		//goalMoves.add(moveBoxToGoal(board, inFrom));
 		return goalMoves;
 	}
-	
 	/**
 	 * Tries to move a box to all goals, and returns a list of the states where this was successful
 	 * @param board
@@ -172,8 +156,6 @@ public class Bond implements Agent{
 		}
 		return boards;
 	}
-
-	
 	/**
 	 * Tries to move a box to given coords.
 	 * TODO:
@@ -228,56 +210,8 @@ public class Bond implements Agent{
 		if (board != null)
 			boards.add(board);
 	}
-	
-	private boolean isDeadLockBoard(Board b, Coords to) {
-		if (guaranteedDeadlocks[to.y][to.x])
-			return true;
-		if (!pullMatrix[to.x][to.y])
-			return true;
-		if (isSquare(b))
-			return true;
-		return false;
-	}
-	
-	private boolean isSquare(Board b) {
-		Coords[] boxes = b.getBoxes();
-		for (int i = 0; i < boxes.length; i++) {
-			int x = boxes[i].getX();
-			int y = boxes[i].getY();
-			
-			boolean xplus1 = b.isTileWalkable(new Coords(x+1,y)) || b.getTileAt(new Coords(x+1,y)) == Surf.boxGoal;
-			boolean xplus1yplus1 = b.isTileWalkable(new Coords(x+1,y+1)) || b.getTileAt(new Coords(x+1,y+1)) == Surf.boxGoal;
-			boolean yplus1 = b.isTileWalkable(new Coords(x,y+1)) || b.getTileAt(new Coords(x,y+1)) == Surf.boxGoal;
-			
-			boolean xplus1yminus1 = b.isTileWalkable(new Coords(x+1,y-1))|| b.getTileAt(new Coords(x+1,y-1)) == Surf.boxGoal;
-			boolean xyminus1 = b.isTileWalkable(new Coords(x,y-1)) || b.getTileAt(new Coords(x+1,y-1)) == Surf.boxGoal;
-			
-			boolean xminus1yminus1 = b.isTileWalkable(new Coords(x-1,y-1)) || b.getTileAt(new Coords(x-1,y-1)) == Surf.boxGoal;
-			boolean xminus1 = b.isTileWalkable(new Coords(x-1,y)) || b.getTileAt(new Coords(x-1,y)) == Surf.boxGoal;
-			
-			boolean xminus1yplus1 = b.isTileWalkable(new Coords(x-1,y+1)) || b.getTileAt(new Coords(x-1,y+1)) == Surf.boxGoal;
-			boolean xyplus1 = b.isTileWalkable(new Coords(x,y+1)) || b.getTileAt(new Coords(x,y+1)) == Surf.boxGoal;
-			
-			boolean deadLock = false;
-			if ( !xplus1 && !xplus1yplus1 && !yplus1) {
-				deadLock = true;
-			} else if ( !xplus1yminus1 && !xyminus1 && !xplus1yplus1) {
-				deadLock = true;
-			} else if ( !xyminus1 && !xminus1yminus1 && !xminus1) {
-				deadLock = true;
-			} else if ( !xminus1 && !xminus1yplus1 && !xyplus1) {
-				deadLock = true;
-			}
-			
-			if (deadLock)
-				//b.printMap();
-				return deadLock;
-		}
-		return false;
-	}
 
 	private Board moveBox(Coords inFrom, Board.Direction inTo, Board board) {
-
 		return moveBox(inFrom, inTo, board, false);
 	}
 	/**
@@ -300,9 +234,9 @@ public class Bond implements Agent{
 		Coords from = new Coords (inFrom.x, inFrom.y);
 		Coords to = CoordHelper.nextCoordInDirection(inTo, from);
 
-		if (isDeadLockBoard(board, to))
+		if (guaranteedDeadlocks[to.y][to.x])
 			return null;
-		
+
 		Coords pushingPlayerPosition = Tools.getPushingPlayerPosition (inFrom, to);
 		if (!board.isTileWalkable(pushingPlayerPosition, disregardBoxes) || !board.isTileWalkable(to, disregardBoxes))
 			return null;
@@ -326,7 +260,7 @@ public class Bond implements Agent{
 		while (BondHeuristics.tunnelPush (from, to, newBoard)){
 			newBoard.movePlayer(inTo);
 		}
-		//newBoard.printMap();
+		newBoard.printMap();
 		return newBoard;
 	}
 }

@@ -6,68 +6,6 @@ public class Tools {
 
 	public static boolean DEBUG = false;
 
-	public static boolean[][] createPullMatrix(Board b) {
-		boolean[][] returnMatrix = new boolean[b.getHeight()][b.getWidth()];
-		Coords[] goals = b.getGoals();
-		for (int i = 0; i < goals.length; i++) {
-			Coords goal = goals[i];
-			returnMatrix = pull(returnMatrix, goals[i], b);
-			
-		}
-		return returnMatrix;
-	}
-	
-	private static boolean[][] pull(boolean[][] m, Coords start, Board b) {
-		m[start.x][start.y] = true; 
-		Coords c1 = new Coords(start.x+1, start.y);
-		Coords c2 = new Coords(start.x+2, start.y);
-		Coords c3 = new Coords(start.x-1, start.y);
-		Coords c4 = new Coords(start.x-2, start.y);
-		Coords c5 = new Coords(start.x, start.y+1);
-		Coords c6 = new Coords(start.x, start.y+2);
-		Coords c7 = new Coords(start.x, start.y-1);
-		Coords c8 = new Coords(start.x, start.y-2);
-		
-		Coords c = c1;
-		Coords n = c2;
-		if (!m[c.x][c.y] && canWalkOn(b, c) && canWalkOn(b, n)) {
-			m[c.x][c.y] = true;
-			Tools.printBipartiteArray(m, m.length, m[0].length);
-			m = pull(m, c, b);
-		}
-		c = c3;
-		n = c4;
-		if (!m[c.x][c.y] && canWalkOn(b, c) && canWalkOn(b, n)) {
-			m[c.x][c.y] = true;
-			Tools.printBipartiteArray(m, m.length, m[0].length);
-			m = pull(m, c, b);
-		}
-		c = c5;
-		n = c6;
-		if (!m[c.x][c.y] && canWalkOn(b, c) && canWalkOn(b, n)) {
-			m[c.x][c.y] = true;
-			Tools.printBipartiteArray(m, m.length, m[0].length);
-			m = pull(m, c, b);
-		}
-		c = c7;
-		n = c8;
-		if (!m[c.x][c.y] && canWalkOn(b, c) && canWalkOn(b, n)) {
-			m[c.x][c.y] = true;
-			Tools.printBipartiteArray(m, m.length, m[0].length);
-			m = pull(m, c, b);
-		}
-		return m;
-	}
-	
-	private static boolean canWalkOn(Board b, Coords i) {
-		char tmpTile = b.getTileAt(i);
-		if (tmpTile == Surf.box || tmpTile == Surf.boxGoal || tmpTile == Surf.empty || tmpTile == Surf.goal || tmpTile == Surf.player || tmpTile == Surf.playerGoal) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-	
 	public static boolean[][] createMatrix (Board b){
 		boolean[][] bipartite = new boolean[b.getHeight()][b.getWidth()];
 		for (int i=0;i<b.getHeight();i++){
@@ -125,7 +63,7 @@ public class Tools {
 
 	public static void printBipartiteArray(boolean[][] bipartite, 
 			int boardHeight, int boardWidth) {
-		System.out.print("ï¿½ x:");
+		System.out.print("ÿ x:");
 		for ( int w = 0;w<boardWidth;w++){
 			if (w<10)
 				System.out.print ("[0"+w+"]");
@@ -140,7 +78,7 @@ public class Tools {
 				System.out.print ("["+i+"]");
 			for (int j = 0; j < boardWidth; j++) {
 				if (bipartite[i][j]) {
-					System.out.print("[XX]");
+					System.out.print("[]");
 				} else {
 					System.out.print("[  ]");
 				}
@@ -169,7 +107,7 @@ public class Tools {
 	}
 	
 	public static Board.Direction getDirection(Coords from, Coords to) {
-		// de mï¿½ste vara en ifrï¿½n
+		// de måste vara en ifrån
 		if (from.x + 1 == to.x && from.y == to.y) {
 			return Board.Direction.RIGHT;
 		}
