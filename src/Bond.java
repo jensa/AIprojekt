@@ -51,6 +51,7 @@ public class Bond implements Agent{
 		String path = "";
 		while (!states.isEmpty()) {
 			Board state = states.pop();
+			state.printMap();
 			if (passedStates.contains(state.hash()))
 				continue;
 			if (state.isSolved()) {
@@ -219,10 +220,50 @@ public class Bond implements Agent{
 			return true;
 		if (!pullMatrix[to.x][to.y])
 			return true;
+		if (isSquare(b))
+			return true;
+		return false;
+	}
+	
+	private boolean isSquare(Board b) {
+		Coords[] boxes = b.getBoxes();
+		for (int i = 0; i < boxes.length; i++) {
+			int x = boxes[i].getX();
+			int y = boxes[i].getY();
+			
+			boolean xplus1 = b.isTileWalkable(new Coords(x+1,y)) || b.getTileAt(new Coords(x+1,y)) == Surf.boxGoal;
+			boolean xplus1yplus1 = b.isTileWalkable(new Coords(x+1,y+1)) || b.getTileAt(new Coords(x+1,y+1)) == Surf.boxGoal;
+			boolean yplus1 = b.isTileWalkable(new Coords(x,y+1)) || b.getTileAt(new Coords(x,y+1)) == Surf.boxGoal;
+			
+			boolean xplus1yminus1 = b.isTileWalkable(new Coords(x+1,y-1))|| b.getTileAt(new Coords(x+1,y-1)) == Surf.boxGoal;
+			boolean xyminus1 = b.isTileWalkable(new Coords(x,y-1)) || b.getTileAt(new Coords(x+1,y-1)) == Surf.boxGoal;
+			
+			boolean xminus1yminus1 = b.isTileWalkable(new Coords(x-1,y-1)) || b.getTileAt(new Coords(x-1,y-1)) == Surf.boxGoal;
+			boolean xminus1 = b.isTileWalkable(new Coords(x-1,y)) || b.getTileAt(new Coords(x-1,y)) == Surf.boxGoal;
+			
+			boolean xminus1yplus1 = b.isTileWalkable(new Coords(x-1,y+1)) || b.getTileAt(new Coords(x-1,y+1)) == Surf.boxGoal;
+			boolean xyplus1 = b.isTileWalkable(new Coords(x,y+1)) || b.getTileAt(new Coords(x,y+1)) == Surf.boxGoal;
+			
+			boolean deadLock = false;
+			if ( !xplus1 && !xplus1yplus1 && !yplus1) {
+				deadLock = true;
+			} else if ( !xplus1yminus1 && !xyminus1 && !xplus1yplus1) {
+				deadLock = true;
+			} else if ( !xyminus1 && !xminus1yminus1 && !xminus1) {
+				deadLock = true;
+			} else if ( !xminus1 && !xminus1yplus1 && !xyplus1) {
+				deadLock = true;
+			}
+			
+			if (deadLock)
+				//b.printMap();
+				return deadLock;
+		}
 		return false;
 	}
 
 	private Board moveBox(Coords inFrom, Board.Direction inTo, Board board) {
+
 		return moveBox(inFrom, inTo, board, false);
 	}
 	/**
