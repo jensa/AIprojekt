@@ -1,9 +1,10 @@
 
-public class Coords {
+public class Coords implements Comparable<Coords>{
 	
 	public int x;
 	public int y;
 	public int id;
+	public Coords par;
 	
 	
 	public Coords (int tx, int ty){
@@ -38,6 +39,26 @@ public class Coords {
 			isEqual = c.getX() == x && c.getY() == y;
 		}
 		return isEqual;
+	}
+	
+	@Override
+	public int hashCode (){
+		return x*1000+y;
+	}
+
+	@Override
+	public int compareTo(Coords o) {
+		if (o.x > x)
+			return -1;
+		if (o.x < x)
+			return 1;
+		if (o.x == x){
+			if (o.y > y)
+				return -1;
+			if (o.y < y)
+				return 1;
+		}
+		return 0;
 	}
 
 }

@@ -21,122 +21,117 @@ public class Bond implements Agent{
 	int[][] counterMap;
 	int boardWidth;
 	int boardHeight;
-	Stack<Board> states = new Stack<Board>();
+	PriorityQueue<Board> states = new PriorityQueue<Board>();
 	HashSet<String> passedStates = new HashSet<String>();
 	private boolean[][] guaranteedDeadlocks;
+	private final int MAX_PATH_SIZE = 300;
 	//	static boolean[][] deadlockMatrix;
 
 
 	@Override
 	public String solve(Board solveBoard) {
+
+
 		Board board = solveBoard;
-		System.out.println("solve");
+//		System.out.println("solve");
 		boardHeight = board.getHeight ();
 		boardWidth = board.getWidth ();
 		guaranteedDeadlocks = Tools.createMatrix(solveBoard);
-		calculateAdditionalDeadlocks (board.noBoxClone());
 		//		deadlockMatrix = calculateDeadlock (board);
 		Tools.printBipartiteArray(guaranteedDeadlocks, boardHeight, boardWidth);
 		if (boardHeight > 1){
-//						return "";
+//			Tools.doWalk("LDLRDRUDRRUDRRDDLLLLLUDRRRRRUULLLLULLDLLURUUUURRRRRDDDDLDRLLLURDRRUUUUULLLLLDDDDRLUUUURRRRRDDDDDLLLLULUUUURRRRRDDDDDLLURDRULDLLDDRRRRRUULLLRRRDDLLLLLUULULUUUURRRRRDDDDLLLRRRUUUULLLLLDDDDLDRUUUUURRRRRDDDDLLLUURDLDDDDRRRRRUUUL", board);
+//			return "LDLRDRUDRRUDRRDDLLLLLUDRRRRRUULLLLULLDLLURUUUURRRRRDDDDLDRLLLURDRRUUUUULLLLLDDDDRLUUUURRRRRDDDDDLLLLULUUUURRRRRDDDDDLLURDRULDLLDDRRRRRUULLLRRRDDLLLLLUULULUUUURRRRRDDDDLLLRRRUUUULLLLLDDDDLDRUUUUURRRRRDDDDLLLUURDLDDDDRRRRRUUUL";
 		}
 		//		board.printMap();
-		System.out.println("original");
-		board.printMap();
+//		System.out.println("original");
+//		board.printMap();
 		states.add(board);
 		String path = "";
 		while (!states.isEmpty()) {
-			Board state = states.pop();
+			Board state = states.poll();
 			if (passedStates.contains(state.hash()))
 				continue;
 			if (state.isSolved()) {
 				System.out.println("We did it");
-				state.printMap();
-				path = state.getPath();
+//				state.printMap();
+				path = state.getPath().toString();
 				break;
 			} else {
 				passedStates.add(state.hash ());
-				for (Coords c : state.getBoxes()) {
-					for (Board b : moveBox(state,c))
-						states.push(b);
+				try {
+					ArrayList<Board> matchedBoxes = getNaiveBoxMatch (state);
+					if (matchedBoxes != null){
+						for (Board b : matchedBoxes)
+							states.offer(b);
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
-
-
-			}
-		}
-		return path;
-	}
-	/**
-	 * TODO:
-	 * Intended to claculate bipartite deadlocks before starting,
-	 * by pulling boxes from all goals to all tiles, and filling out
-	 * guaranteedDeadlocks afterwards with unvisited tiles.
-	 * Before this can work however, we need a findPullablePath (from, to)
-	 * @param b
-	 */
-	private void calculateAdditionalDeadlocks(Board b) {
-		for (int i=0;i<b.getHeight();i++){
-			for (int j=0;j<b.getWidth();j++){
-				Coords cell = new Coords (j,i);
-				if (b.getTileAt(cell) == Surf.wall || b.getTileAt(cell) == Surf.goal)
-					continue;
-				boolean foundPath = false;
-				for (Coords c : b.getGoals()){
-					String pullPath = Pathfinder.findPullablePath(c, cell, b);
-					if (!pullPath.equals("")){
-						foundPath = true;
-						break;
+				for (Coords c : state.getBoxes()) {
+					if (state.getGoalsList().contains(c)){
+						for (Board b : moveBox(state,c))
+							states.offer(b);
 					}
 				}
-				if (!foundPath){
-					guaranteedDeadlocks[i][j] = true;
+				for (Coords c : state.getBoxes()) {
+					if (!state.getGoalsList().contains(c)){
+						for (Board b : moveBox(state,c))
+							states.offer(b);
+					}
 				}
+
+
 			}
 		}
+//		System.out.println ("Solution: "+path);
+		//		Tools.doWalk(path, board);
+		return path;
 	}
-	/**
-	 * Performs a walk thrhough a given path,
-	 * useful mostly for debugging
-	 * @param path
-	 * @param board
-	 */
-	private void doWalk(String path, Board board) {
-		char[] pathc = path.toCharArray();
-		Board b = board;
-		for (char step : pathc){
-			Board.Direction dir = null;
-			switch (step){
-			case 'U': dir = Board.Direction.UP;break;
-			case 'D': dir = Board.Direction.DOWN;break;
-			case 'L': dir = Board.Direction.LEFT;break;
-			case 'R': dir = Board.Direction.RIGHT;break;
+
+
+	public ArrayList<Board> getNaiveBoxMatch(Board state) throws Exception {
+		CoordPair[] matches = Matcher.getMatch(state);
+		if (matches == null || matches.length < 1)
+			return null;
+		Board newBoard = state.clone();
+//		System.out.println ("Found "+matches.length+" matches for map:");
+//		for (CoordPair p : matches)
+//			System.out.println(p.toString()+": "+p.p.toString());
+//		newBoard.printMap();
+		Coords from = matches[0].from;
+
+		ArrayList<Board> matchStates = new ArrayList<Board> ();
+		while (matches != null && matches.length>0){
+			CoordPair match = matches[0];
+			from = match.from;
+			Board moved = performBoxMoveToCoords (from, match.to, match.p, newBoard);
+			if (moved != null){
+				matchStates.add(moved);
+				newBoard = moved;
+				newBoard.modScore(2000);
+				from = newBoard.getPlayer();
 			}
-			board.movePlayer(dir);
-			board.printMap();
-			try {
-				Thread.sleep(200);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+			matches = Matcher.getMatch(moved);
+
 		}
+//		System.out.println ("After moving:");
+//		newBoard.printMap();
+		return matchStates;
 	}
 
 	/**
 	 * Performs some mutations of a state. Tries to move a box to any goals,
 	 * and moves the box one step in all possible directions.
-	 * 
-	 * TODO: moving the box to the goal usually does not work.
-	 * A findPushablePath (from, to) is needed to make it work.
-	 * Right now it finds only the shortest walkable path, and if pushing the box is unsuccessful it drops the state
-	 * without trying other paths (because findPath () only finds shortest path)
 	 * @param board
 	 * @param inFrom
 	 * @return a list of states generated by the moves performed
 	 */
 	private ArrayList<Board> moveBox(Board board,Coords inFrom) {
-		ArrayList<Board> goalMoves = new ArrayList<Board> ();//moveBoxToGoal (board, inFrom, false); //
-		goalMoves.addAll(moveBoxInAllDirections (board, inFrom));
-		return goalMoves;
+		ArrayList<Board> allDirs = moveBoxInAllDirections (board, inFrom);
+		ArrayList<Board> goalMoves = moveBoxToAllGoals (board, inFrom, false);
+		allDirs.addAll(goalMoves);
+		return allDirs;
 	}
 	/**
 	 * Tries to move a box to all goals, and returns a list of the states where this was successful
@@ -145,7 +140,7 @@ public class Bond implements Agent{
 	 * @param ignoreBoxes if boxes are to be ignored while pushing (treated as walkable)
 	 * @return
 	 */
-	private ArrayList<Board> moveBoxToGoal(Board board, Coords inFrom, boolean ignoreBoxes) {
+	private ArrayList<Board> moveBoxToAllGoals(Board board, Coords inFrom, boolean ignoreBoxes) {
 		Coords[] goals = board.getGoals();
 		Coords from = new Coords (inFrom.x, inFrom.y);
 		ArrayList<Board> boards = new ArrayList<Board> ();
@@ -157,11 +152,7 @@ public class Bond implements Agent{
 		return boards;
 	}
 	/**
-	 * Tries to move a box to given coords.
-	 * TODO:
-	 * This doesn't work very well. it currently finds the shortest walkable path and tries
-	 * to push the box along that path. If that fails, it gives up on it completely.
-	 * We need a findPushablePath (from, to) to use this properly.
+	 * Tries to move a box to given coords. Returns a new board with the move made.
 	 * @param from
 	 * @param to
 	 * @param board
@@ -169,11 +160,20 @@ public class Bond implements Agent{
 	 * @return
 	 */
 	private Board moveBoxToCoords (Coords from, Coords to, Board board, boolean ignoreBoxes){
-		String pathToPos = Pathfinder.findPushablePath (from, to, board);
+		Path pathToPos = Pathfinder.findPushablePath (from, to, board);
 		if (pathToPos == null)
 			return null;
-		char[] path = pathToPos.toCharArray();
-		Board b = board.clone();
+		return performBoxMoveToCoords (from, to, pathToPos, board);
+	}
+	/**
+	 * Pushes boxes on a board according to the given path and coordinates.
+	 * @param from
+	 * @param to
+	 * @param p
+	 * @param b
+	 */
+	public Board performBoxMoveToCoords (Coords from, Coords to, Path p, Board b){
+		char[] path = p.toString().toCharArray();
 		for (char step : path){
 			Board.Direction dir = null;
 			switch (step){
@@ -182,11 +182,10 @@ public class Bond implements Agent{
 			case 'L': dir = Board.Direction.LEFT;break;
 			case 'R': dir = Board.Direction.RIGHT;break;
 			}
-			b = moveBox (from, dir, b, ignoreBoxes);
+			b = moveBox (from, dir, b);
 			if (b == null)
-				return null;
+				break;
 			from = CoordHelper.nextCoordInDirection(dir, from);
-
 		}
 		return b;
 	}
@@ -212,7 +211,7 @@ public class Bond implements Agent{
 	}
 
 	private Board moveBox(Coords inFrom, Board.Direction inTo, Board board) {
-		return moveBox(inFrom, inTo, board, false);
+		return moveBox(inFrom, inTo, board, false, false);
 	}
 	/**
 	 * Moves a box in the given direction.
@@ -220,15 +219,15 @@ public class Bond implements Agent{
 	 * destination causes bipartite deadlock (guaranteedDeadlocks[dest] == true)
 	 * player pushing position or destination square is not empty/goal
 	 * there is no path from the player's current position to the pushing position
-	 * BondHeuristics considers any box to cause a deadlock
 	 * @param inFrom the box to be pushed
 	 * @param inTo direction of push
 	 * @param board
 	 * @param disregardBoxes wether to mind any boxes when pushing 
+	 * @param ignoreTunnels 
 	 * @return the state after the push, null if push failed
 	 */
 	private Board moveBox(Coords inFrom, Board.Direction inTo, 
-			Board board, boolean disregardBoxes) {
+			Board board, boolean disregardBoxes, boolean ignoreTunnels) {
 		Coords player = board.getPlayer();
 		//Copy Coords to avoid changing board state
 		Coords from = new Coords (inFrom.x, inFrom.y);
@@ -241,26 +240,39 @@ public class Bond implements Agent{
 		if (!board.isTileWalkable(pushingPlayerPosition, disregardBoxes) || !board.isTileWalkable(to, disregardBoxes))
 			return null;
 
-		String pathToPos = Pathfinder.findPath (player, pushingPlayerPosition, board, Pathfinder.WalkMode.WALK);
-		if (pathToPos == null || pathToPos.equals(""))
+		Path pathToPos = Pathfinder.findPath (player, pushingPlayerPosition, board, Pathfinder.WalkMode.WALK);
+		if (pathToPos == null)
 			return null;
-
+		if (board.getPath() != null){
+			if (pathToPos.direction == '?')
+				pathToPos = board.getPath();
+			else
+				pathToPos.getRoot().parent = board.getPath();
+		}
+		if (pathToPos.getSize() > MAX_PATH_SIZE)
+			return null;
 		Board newBoard = board.clone();
-//		newBoard.modScore(board.getScore()*10);
-		String movedDirection = Tools.getMovedDirection (inTo);
-		if (!newBoard.appendPath(pathToPos+movedDirection))
+		if (passedStates.contains(newBoard))
 			return null;
-
+		newBoard.modScore(board.getScore());
+		char movedDirection = Tools.getMovedDirection (inTo);
+		Path movedPath = new Path (pathToPos, movedDirection);
+		newBoard.setPath(movedPath);
 		newBoard.getPlayer().x = pushingPlayerPosition.x;
 		newBoard.getPlayer().y = pushingPlayerPosition.y;
 		newBoard.movePlayer(inTo);
-		//		if (board.getTileAt(from) == Surf.boxGoal && newBoard.getTileAt(to) == Surf.boxGoal)
-		//			newBoard.modScore(-1000);
+		if (board.getTileAt(from) == Surf.boxGoal && newBoard.getTileAt(to) == Surf.boxGoal)
+			newBoard.modScore(-1000);
 
-		while (BondHeuristics.tunnelPush (from, to, newBoard)){
+		while (!ignoreTunnels && BondHeuristics.tunnelPush (from, to, inTo, newBoard)){
+			//			System.out.println("Tunnel detected. pushing "+inTo);
 			newBoard.movePlayer(inTo);
+			newBoard.setPath(new Path (newBoard.getPath(), movedDirection));
+			from = to;
+			to = CoordHelper.nextCoordInDirection(inTo, from);
+			newBoard.modScore(10);
 		}
-		newBoard.printMap();
+		//				newBoard.printMap();
 		return newBoard;
 	}
 }

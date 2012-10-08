@@ -13,7 +13,37 @@ public class Tools {
 					bipartite[i][j] = isDeadlockSquare (j, i, b);
 			}
 		}
+		calculateAdditionalDeadlocks (b.noBoxClone(), bipartite);
 		return bipartite;
+	}
+	
+	/**
+	 * TODO:
+	 * Intended to claculate bipartite deadlocks before starting,
+	 * by pulling boxes from all goals to all tiles, and filling out
+	 * guaranteedDeadlocks afterwards with unvisited tiles.
+	 * Before this can work however, we need a findPullablePath (from, to)
+	 * @param b
+	 */
+	private static void calculateAdditionalDeadlocks(Board b, boolean[][] guaranteedDeadlocks) {
+		for (int i=0;i<b.getHeight();i++){
+			for (int j=0;j<b.getWidth();j++){
+				Coords cell = new Coords (j,i);
+				if (b.getTileAt(cell) == Surf.wall || b.getTileAt(cell) == Surf.goal)
+					continue;
+				boolean foundPath = false;
+				for (Coords c : b.getGoals()){
+					Path p = Pathfinder.findPullablePath(c, cell, b);
+					if (p != null){
+						foundPath = true;
+						break;
+					}
+				}
+				if (!foundPath){
+					guaranteedDeadlocks[i][j] = true;
+				}
+			}
+		}
 	}
 
 	private static boolean isDeadlockSquare(int i, int j, Board b) {
@@ -88,14 +118,14 @@ public class Tools {
 
 	}
 	
-	public static String getMovedDirection(Board.Direction inTo) {
+	public static char getMovedDirection(Board.Direction inTo) {
 		switch (inTo){
-		case RIGHT: return "R";
-		case LEFT: return "L";
-		case DOWN: return "D";
-		case UP: return "U";
+		case RIGHT: return 'R';
+		case LEFT: return 'L';
+		case DOWN: return 'D';
+		case UP: return 'U';
 		}
-		return null;
+		return '@';
 	}
 	
 	public static Coords getPushingPlayerPosition(Coords inFrom, Coords inTo) {
@@ -162,6 +192,32 @@ public class Tools {
 			}
 		}
 		
+	}
+	
+	/**
+	 * Performs a walk thrhough a given path,
+	 * useful mostly for debugging
+	 * @param path
+	 * @param board
+	 */
+	public static void doWalk(String path, Board board) {
+		char[] pathc = path.toCharArray();
+		for (char step : pathc){
+			Board.Direction dir = null;
+			switch (step){
+			case 'U': dir = Board.Direction.UP;break;
+			case 'D': dir = Board.Direction.DOWN;break;
+			case 'L': dir = Board.Direction.LEFT;break;
+			case 'R': dir = Board.Direction.RIGHT;break;
+			}
+			board.movePlayer(dir);
+			board.printMap();
+			try {
+				Thread.sleep(200);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 }

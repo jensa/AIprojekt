@@ -5,6 +5,8 @@ import java.util.Stack;
 
 public class Pathfinder {
 
+	public static final int INF = 999999;
+
 	/*
 	 * Disclaimer:
 	 * The pushable/pullabe paths for now at least assume that if a box has two opposite
@@ -18,15 +20,15 @@ public class Pathfinder {
 
 	public enum WalkMode { WALK, PUSH, PULL }
 
-	public static String findPullablePath (Coords from, Coords to, Board board){
+	public static Path findPullablePath (Coords from, Coords to, Board board){
 		return findPath (from, to, board, WalkMode.PULL);
 	}
 
-	public static String findPushablePath (Coords from, Coords to, Board board){
+	public static Path findPushablePath (Coords from, Coords to, Board board){
 		return findPath (from, to, board, WalkMode.PUSH);
 	}
 
-	public static String findWalkablePath (Coords from, Coords to, Board board){
+	public static Path findWalkablePath (Coords from, Coords to, Board board){
 		return findPath (from, to, board, WalkMode.WALK);
 	}
 
@@ -37,7 +39,12 @@ public class Pathfinder {
 	 * @param board
 	 * @return
 	 */
-	public static String findPath (Coords from, Coords to, Board board, WalkMode mode){
+	public static Path findPath (Coords from, Coords inTo, Board board, WalkMode mode){
+		Coords to = new Coords (inTo.x, inTo.y);
+		if (mode == WalkMode.PUSH)
+			board.setIgnoreBox(from);
+		if (from.equals(to))
+			return new Path();
 		Stack<Coords> queue = new Stack<Coords> ();
 		int[][] counterMap = new int[board.getWidth()][board.getHeight()];
 		queue.push(from);
@@ -51,7 +58,7 @@ public class Pathfinder {
 				if (c.equals(to))
 					break;
 			}
-			ArrayList<Coords> cells = AdjacentCells (c, board, mode);
+			ArrayList<Coords> cells = AdjacentCells (c, board, counterMap, mode, to);
 			for (int i=0; i<cells.size();i++){
 				Coords adjacentCell = cells.get(i);
 				boolean lowerCounterExists = counterMap [adjacentCell.x][adjacentCell.y] > 0 &&
@@ -62,6 +69,7 @@ public class Pathfinder {
 				}
 				else{
 					counterMap [adjacentCell.x][adjacentCell.y] = counterMap [c.x][c.y]+1;
+					adjacentCell.par = c;
 				}
 
 			}
@@ -69,70 +77,74 @@ public class Pathfinder {
 				queue.push(newCoords);
 			Tools.printCounter (counterMap, 0);
 		}
-
-		//p("to, x: " + to.x + " y: " + to.y);
+		board.resetBoxes();
 		try{
-			if (!(counterMap[to.x][to.y] > 0))
-				return "";
-			String bestPath = extractPath (from, to, counterMap);
-			if (false){
-				System.out.println (mode+"path from "+from+" to "+to+":"+ bestPath);
-			}
+			if (mode != WalkMode.WALK &&!(counterMap[to.x][to.y] > 0))
+				return null;
+//			if (mode == WalkMode.PUSH)
+//				System.out.println (from+" -> "+to+" mode "+mode);
+			Path bestPath = extractPath (from, to, counterMap);
+			Tools.printCounter(counterMap, 0);
 			return bestPath;
 		} catch (ArrayIndexOutOfBoundsException e){
-			return "";
+			return null;
 		}
 	}
 
-	private static String extractPath(Coords from, Coords to, int[][] counterMap) {
+	private static Path extractPath(Coords from, Coords to, int[][] counterMap) {
 		if (to.x == from.x && to.y == from.y) {
-			return "";
+			return null;
 		}
 		int nextX = to.x;
 		int nextY = 0;
-		String dir = "";
-		int nextBestScore = 1000;
-		if (counterMap[to.x+1][to.y] > 0 && counterMap[to.x+1][to.y] < nextBestScore|| (from.x == to.x+1 && from.y == to.y)) {
-			nextX = to.x+1;
-			nextY = to.y;
-			nextBestScore = counterMap[nextX][nextY];
-			dir = "L";
+		char dir = 'q';
+		int current = counterMap[to.x][to.y];
+		// check right square
+		int right = counterMap[to.x+1][to.y];
+		if ((right > 0 && right+1 == current) || (from.x == to.x+1 && from.y == to.y)) {
+				nextX = to.x+1;
+				nextY = to.y;
+				dir = 'L';
 		}	
-		if (counterMap[to.x-1][to.y] > 0 && counterMap[to.x-1][to.y] < nextBestScore|| (from.x == to.x-1 && from.y == to.y)) {
-			nextX = to.x-1;
-			nextY = to.y;
-			nextBestScore = counterMap[nextX][nextY];
-			dir = "R";
+		//left
+		int left = counterMap[to.x-1][to.y];
+		if ((left > 0 && left+1 == current) || (from.x == to.x-1 && from.y == to.y)) {
+				nextX = to.x-1;
+				nextY = to.y;
+				dir = 'R';
 		}
-		if (counterMap[to.x][to.y+1] > 0 && counterMap[to.x][to.y+1] < nextBestScore || (from.x == to.x && from.y == to.y +1)) {
-			nextX = to.x;
-			nextY = to.y+1;
-			nextBestScore = counterMap[nextX][nextY];
-			dir = "U";
+		//down
+		int down = counterMap[to.x][to.y+1];
+		if ((down > 0 && down+1 == current ) || (from.x == to.x && from.y == to.y +1)) {
+				nextX = to.x;
+				nextY = to.y+1;
+				dir = 'U';
 		}
-		if (counterMap[to.x][to.y-1] > 0 && counterMap[to.x][to.y-1] < nextBestScore || (from.x == to.x && from.y == to.y -1)) {
-			nextX = to.x;
-			nextY = to.y-1;
-			nextBestScore = counterMap[nextX][nextY];
-			dir = "D";
+		//up
+		int up = counterMap[to.x][to.y-1];
+		if ((up > 0 && up+1 ==current) || (from.x == to.x && from.y == to.y -1)) {
+				nextX = to.x;
+				nextY = to.y-1;
+				dir = 'D';
 		}
-		if (dir=="")
-			return "";
+		if (dir=='q')
+			return null;
 		else
-			return extractPath(from, new Coords(nextX, nextY), counterMap)+dir;
+			return new Path (extractPath(from, new Coords(nextX, nextY), counterMap),dir);
 	}
 
 	/**
 	 * Returnera en lista på rutor vi kan stå på.
 	 * @param cell
+	 * @param to 
 	 * @return
 	 */
-	private static ArrayList<Coords> AdjacentCells(Coords cell, Board board, WalkMode mode) {
+	private static ArrayList<Coords> AdjacentCells(Coords cell, Board board, int[][] map, WalkMode mode, Coords to) {
 		switch (mode){
 
 		case PULL: return pullableAdjacentCells (cell, board);
-		case PUSH: return pushableAdjacentCells (cell, board);
-		default: return walkableAdjacentCells (cell, board);
+		case PUSH: return pushableAdjacentCells (cell, board, map);
+		default: return walkableAdjacentCells (cell, board, to);
 		}
 	}
 
@@ -166,24 +178,42 @@ public class Pathfinder {
 	}
 
 	private static ArrayList<Coords> pushableAdjacentCells(Coords cell,
-			Board b) {
+			Board b, int[][] map) {
+		b.setNewBox(cell);
 		ArrayList<Coords> cells = new ArrayList<Coords> ();
-		Coords up = new Coords (cell.x-1, cell.y);
-		Coords down = new Coords (cell.x+1, cell.y);
-		Coords left = new Coords (cell.x, cell.y-1);
-		Coords right = new Coords (cell.x, cell.y+1);
+		Coords left = new Coords (cell.x-1, cell.y);
+		Coords right = new Coords (cell.x+1, cell.y);
+		Coords up = new Coords (cell.x, cell.y-1);
+		Coords down = new Coords (cell.x, cell.y+1);
+		Coords assumedPlayerPos = cell.par; // man likely stands where the box came from
+		boolean foundPlayer = assumedPlayerPos != null;
 		if (b.isTileWalkable(up) && b.isTileWalkable(down)){
-			addCell (up, cells, b);
-			addCell (down, cells, b);
+			if (foundPlayer){
+				if (findPath (assumedPlayerPos, down, b, WalkMode.WALK) != null)
+					addCell (up, cells, b);
+				if (findPath (assumedPlayerPos, up, b, WalkMode.WALK) != null)
+					addCell (down, cells, b);
+			}else{
+				addCell (up, cells, b);
+				addCell (down, cells, b);
+			}
 		}
 		if (b.isTileWalkable(left) && b.isTileWalkable(right)){
-			addCell (left, cells, b);
-			addCell (right, cells, b);
+			if (foundPlayer){
+				if (findPath (assumedPlayerPos, right, b, WalkMode.WALK) != null)
+					addCell (left, cells, b);
+				if (findPath (assumedPlayerPos, left, b, WalkMode.WALK) != null)
+					addCell (right, cells, b);
+			} else{
+				addCell (left, cells, b);
+				addCell (right, cells, b);
+			}
 		}
+		b.resetNewBoxes();
 		return cells;
 	}
 
-	public static void addCell (Coords c, ArrayList<Coords> cells, Board b){
+	private static void addCell (Coords c, ArrayList<Coords> cells, Board b){
 		try{
 			cells.add(c);
 		} catch(ArrayIndexOutOfBoundsException e){
@@ -191,15 +221,35 @@ public class Pathfinder {
 		}
 	}
 
+	public static Coords findClosestGoal (Coords from, Board b){
+		int lengthToGoal = INF;
+		Coords bestGoal = null;
+		for (Coords goal : b.getGoals()){
+			if (b.getTileAt(goal) == Surf.boxGoal)
+				continue;
+			Path p = findPushablePath (from, goal, b);
+			if (p == null)
+				continue;
+			int length = p.toString().length();
+			if (length < lengthToGoal){
+				lengthToGoal = length;
+				bestGoal = goal;
+			}
+		}
+		if (bestGoal == null)
+			return null;
+		return new Coords (bestGoal.x, bestGoal.y);
+	}
 	/**
 	 * Returnera en lista på rutor vi kan stå på.
 	 * @param cell
+	 * @param goal 
 	 * @return
 	 */
-	private static ArrayList<Coords> walkableAdjacentCells(Coords cell, Board board) {
+	private static ArrayList<Coords> walkableAdjacentCells(Coords cell, Board board, Coords goal) {
 		ArrayList<Coords> list = Tools.createAdjacentCells(cell, board);
 		for (int i = 0; i < list.size(); i++) {
-			if (!board.isTileWalkable(list.get(i))) {
+			if (!list.get(i).equals(goal) && !board.isTileWalkable(list.get(i))) {
 				list.remove(i);
 				i--;
 			}

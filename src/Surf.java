@@ -1,10 +1,11 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 
 
 public class Surf implements Board{
 
-//	private StringBuilder path;
-	private String path;
+	//	private StringBuilder path;
+	private Path path;
 	final int height;
 	final int width;
 
@@ -25,13 +26,16 @@ public class Surf implements Board{
 	public ArrayList<Coords> goals;
 	public Coords playerPosition;
 	public ArrayList<Coords> boxes;
+	public ArrayList<Coords> ignoredBoxes = new ArrayList<Coords> ();
+	public ArrayList<Coords> ignoredBoxGoals = new ArrayList<Coords> ();
+	public ArrayList<Coords> newBoxes = new ArrayList<Coords> ();
+	public ArrayList<Coords> newBoxGoals = new ArrayList<Coords> ();
 
 	private static int lol;
 
 
 	public Surf (int longestRow, String[] rows){
-//		path = new StringBuilder ();
-		path = "";
+		//		path = new StringBuilder ();
 		boxes = new ArrayList<Coords> ();
 		goals = new ArrayList<Coords> ();
 		height = rows.length;
@@ -46,7 +50,7 @@ public class Surf implements Board{
 	public Surf(Board b, boolean noBoxes) {
 		goals = (ArrayList<Coords>) b.getGoalsList().clone();
 		if (!noBoxes){
-//		path = new StringBuilder(b.getPath());
+			//		path = new StringBuilder(b.getPath());
 			path =b.getPath();
 		}
 		boxes = new ArrayList<Coords> ();
@@ -187,6 +191,8 @@ public class Surf implements Board{
 
 	@Override
 	public int hashCode (){
+		return java.util.Arrays.deepHashCode(boardMatrix);
+		/*
 
 		int hash = 0;
 		for (int i=0;i< getWidth();i++){
@@ -194,7 +200,7 @@ public class Surf implements Board{
 				hash += getTileAt (new Coords (j,i));
 			}
 		}
-		return hash;
+		return hash;*/
 	}
 
 	private boolean isTileGoal(Coords c) {
@@ -267,12 +273,12 @@ public class Surf implements Board{
 		}
 		return true;
 	}
-
+	
 	public void printMap (){
-		lol = 1;
-		if (lol>1)
-			return;
+		printMap (0);
+	}
 
+	public void printMap (int sleep){
 		for (int i=0;i<height;i++){
 			for (int j=0;j<width;j++)
 				if (new Coords(j,i).equals(this.playerPosition))
@@ -281,11 +287,12 @@ public class Surf implements Board{
 					System.out.print("["+boardMatrix[j][i]+"]");
 			System.out.print("\n");
 		}
-		System.out.println (getScore ());
+//		if (path != null)
+//			System.out.println (path.toString());
 		System.out.println("-----------------------");
-		if (Tools.DEBUG){
+		if (sleep > 0){
 			try {
-				Thread.sleep(200);
+				Thread.sleep(sleep);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -320,63 +327,44 @@ public class Surf implements Board{
 		Coords[] b = new Coords[boxes.size()]; 
 		for (int i=0; i<boxes.size();i++)
 			b[i] = boxes.get(i);
+		Arrays.sort(b);
 		/*
+		int hash = 0;
 		for (int i = 0; i < b.length - 1; i++) {
 			double b1 =b[i].x*100;
 			double a = b[i].y*1;
 			double c = (a + b1)*(Math.pow(1000,b[i].id));
 			hash += c;
-		}*/
+		}
+		 */
 		StringBuilder builder = new StringBuilder(b.length*4);
 		for (Coords c : b){
 			builder.append(""+c.x+c.y);
 		}
 		return builder.toString();
+		//		return ""+hash;
 	}
 
 	@Override
-	public String getPath() {
-		return path.toString();
+	public Path getPath() {
+		return path;
 	}
 
 	@Override
-	public boolean appendPath(String pathPart) {
-//		path = path.append(pathPart);
-		path = path.concat(pathPart);
+	public boolean setPath(Path pathPart) {
+		path = pathPart;
 		return true;
-
-
 	}
 	/**
-	 * Score is calced the following:
-	 * box on goal: 10pts
-	 * path to goal form box: 1pt
+	 * 
 	 */
 	public int getScore (){
-		int kuk = 0;
+		int score = 0;
 		for (Coords c : goals){
 			if (getTileAt (c) == boxGoal)
-				kuk += 10;
+				score ++;
 		}
-		for (Coords b : boxes){
-			if (goals.contains(b)){
-				kuk+=10;
-			}else{
-				boolean foundPath = false;
-				for (Coords g : goals){
-					String path = Pathfinder.findPushablePath(b, g, this);
-					if (!path.equals("")){
-						foundPath = true;
-						break;
-					}
-				}
-				if (foundPath)
-					kuk+=1;
-			}
-		}
-
-
-		return kuk+scoreMod;
+		return score+scoreMod;
 
 	}
 
@@ -391,5 +379,62 @@ public class Surf implements Board{
 		else if (o.getScore() < getScore ())
 			return 1;
 		return 0;
+	}
+
+	/*
+	 * FUCK
+	 * This part
+	 * ignore it
+	 * all of it
+	 * it will probably be replaced by something else
+	 * something better
+	 * but now
+	 * its all i can do
+	 * jodu
+	 */
+
+	@Override
+	public void setIgnoreBox(Coords box) {
+		if (ignoredBoxes.contains(box) || ignoredBoxGoals.contains(box))
+			return;
+		if (boardMatrix[box.x][box.y] == boxGoal)
+			ignoredBoxGoals.add(box);
+		else
+			ignoredBoxes.add(box);
+		boardMatrix[box.x][box.y] = empty;
+	}
+
+	public void resetBoxes (){
+		for (Coords c : ignoredBoxes)
+			boardMatrix[c.x][c.y] = box;
+
+		for (Coords c : ignoredBoxGoals)
+			boardMatrix[c.x][c.y] = boxGoal;
+		ignoredBoxes.clear();
+		ignoredBoxGoals.clear();
+	}
+
+	@Override
+	public void setNewBox(Coords b) {
+		if (newBoxes.contains(b) || newBoxGoals.contains(b))
+			return;
+		if (boardMatrix[b.x][b.y] == goal){
+			newBoxGoals.add(b);
+			boardMatrix[b.x][b.y] = boxGoal;
+		}
+		else{
+			newBoxes.add(b);
+			boardMatrix[b.x][b.y] = box;
+		}
+	}
+
+	public void resetNewBoxes (){
+		for (Coords c : newBoxes)
+			boardMatrix[c.x][c.y] = empty;
+
+		for (Coords c : newBoxGoals)
+			boardMatrix[c.x][c.y] = goal;
+		newBoxes.clear();
+		newBoxGoals.clear();
 	}
 }

@@ -49,7 +49,6 @@ public class Client {
 
 			//send the solution to the server
 			String path = bond.solve(board);
-			System.out.println (path);
 			lOut.println(path);
 			lOut.flush();
 

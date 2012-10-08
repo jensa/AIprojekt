@@ -25,6 +25,8 @@ public interface Board extends Comparable<Board>{
 	public Coords[] getBoxes ();
 	
 	public void printMap ();
+	
+	public void printMap (int sleep);
 
 	public char[][] getBackingMatrix();
 	
@@ -40,11 +42,20 @@ public interface Board extends Comparable<Board>{
 	
 	public String hash();
 	
-	public String getPath ();
+	public Path getPath ();
 	
-	public boolean appendPath (String path);
+	public boolean setPath (Path path);
 	
 	public int getScore ();
 	
 	public void modScore (int mod);
+	
+	public void setIgnoreBox(Coords box);
+	
+	public void resetBoxes ();
+	
+	public void setNewBox (Coords box);
+	
+	public void resetNewBoxes ();
+	
 }
