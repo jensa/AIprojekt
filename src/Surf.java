@@ -28,10 +28,10 @@ public class Surf implements Board{
 	public ArrayList<Coords> boxes;
 	public ArrayList<Coords> ignoredBoxes = new ArrayList<Coords> ();
 	public ArrayList<Coords> ignoredBoxGoals = new ArrayList<Coords> ();
-	public ArrayList<Coords> newBoxes = new ArrayList<Coords> ();
-	public ArrayList<Coords> newBoxGoals = new ArrayList<Coords> ();
-
-	private static int lol;
+	public ArrayList<Coords> tempBoxes = new ArrayList<Coords> ();
+	public ArrayList<Coords> tempBoxGoals = new ArrayList<Coords> ();
+	public ArrayList<Coords> tempBoxGoalWalls = new ArrayList<Coords> ();
+	
 
 
 	public Surf (int longestRow, String[] rows){
@@ -426,25 +426,53 @@ public class Surf implements Board{
 
 	@Override
 	public void setNewBox(Coords b) {
-		if (newBoxes.contains(b) || newBoxGoals.contains(b))
+		if (tempBoxes.contains(b) || tempBoxGoals.contains(b))
 			return;
 		if (boardMatrix[b.x][b.y] == goal){
-			newBoxGoals.add(b);
+			tempBoxGoals.add(b);
 			boardMatrix[b.x][b.y] = boxGoal;
 		}
 		else{
-			newBoxes.add(b);
+			tempBoxes.add(b);
 			boardMatrix[b.x][b.y] = box;
 		}
 	}
 
 	public void resetNewBoxes (){
-		for (Coords c : newBoxes)
+		for (Coords c : tempBoxes)
 			boardMatrix[c.x][c.y] = empty;
 
-		for (Coords c : newBoxGoals)
+		for (Coords c : tempBoxGoals)
 			boardMatrix[c.x][c.y] = goal;
-		newBoxes.clear();
-		newBoxGoals.clear();
+		tempBoxes.clear();
+		tempBoxGoals.clear();
+	}
+	
+	public void addTemporaryWall (Coords w){
+		if (tempBoxGoalWalls.contains(w))
+			return;
+		else{
+			tempBoxGoalWalls.add(w);
+			boardMatrix[w.x][w.y] = wall;
+		}
+	}
+	
+	public void resetTempWalls (){
+		for (Coords c : tempBoxGoalWalls)
+			boardMatrix[c.x][c.y] = boxGoal;
+		tempBoxGoalWalls.clear();
+	}
+
+	@Override
+	public boolean isTileAnyBox(Coords c) {
+		char tile = boardMatrix[c.x][c.y];
+		if (tile == box || tile == boxGoal)
+			return true;
+		return false;
+	}
+	
+	public boolean isTileWall(Coords c) {
+		char tile = boardMatrix[c.x][c.y];
+		return tile == wall;
 	}
 }

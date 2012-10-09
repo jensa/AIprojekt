@@ -88,6 +88,69 @@ public class BondHeuristics {
 		return true;
 	}
 
+	public static boolean dynamicDeadlock (Coords box, Board b){
+		boolean boxCorner = isBoxesMakingCorners (box, b);
+		if (boxCorner)
+			return true;
+		//Add more deadlock pattern recognitions ?
+		return false;
+	}
+
+	private static boolean isBoxesMakingCorners(Coords box, Board b) {
+		ArrayList<Coords> adjacent = Tools.createAdjacentCells (box, b);
+		for (Coords c : adjacent){
+			if(b.getTileAt(c) == Surf.wall){
+				if (c.x == box.x){
+					//wall above | under, check sides for box
+					Coords left = new Coords (box.x-1, box.y);
+					Coords right = new Coords (box.x+1, box.y);
+					Coords lockBox = null;
+					if (b.isTileAnyBox(left))
+						lockBox = left;
+					else if (b.isTileAnyBox(right))
+						lockBox = right;
+					if (lockBox != null){
+						boolean isLock = isNeighbourBoxLocked (box, Board.Direction.LEFT, b);
+						if (isLock)
+							return true;
+					}
+
+				}else{
+					// wall to the side, check top & bottom for box
+					Coords up = new Coords (box.x, box.y-1);
+					Coords down = new Coords (box.x, box.y+1);
+					Coords lockBox = null;
+					if (b.isTileAnyBox(up))
+						lockBox = up;
+					else if (b.isTileAnyBox(down))
+						lockBox = down;
+					if (lockBox != null){
+						boolean isLock = isNeighbourBoxLocked (lockBox, Board.Direction.UP, b);
+						if (isLock)
+							return true;
+					}
+				}
+			}
+		}
+
+		return false;
+	}
+
+	private static boolean isNeighbourBoxLocked(Coords box, Board.Direction dir,
+			Board b) {
+		switch (dir){
+		case LEFT: //The neighbour box is located to the side of box, check up&down for walls
+			if (b.isTileWall(new Coords (box.x, box.y-1)) || b.isTileWall(new Coords (box.x, box.y+1)))
+				return true;
+			;break;
+		case UP:
+			if (b.isTileWall(new Coords (box.x-1, box.y)) || b.isTileWall(new Coords (box.x+1, box.y)))
+				return true;
+			;break;
+		}
+		return false;
+	}
+
 
 
 }

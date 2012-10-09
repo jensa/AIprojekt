@@ -18,6 +18,9 @@ public interface Board extends Comparable<Board>{
 	
 	public boolean isTileWalkable(Coords c, boolean ignoreBoxes);
 	
+	public boolean isTileAnyBox (Coords c);
+	public boolean isTileWall (Coords c);
+	
 	public Coords[] getGoals ();
 	
 	public Coords getPlayer ();
@@ -61,5 +64,9 @@ public interface Board extends Comparable<Board>{
 	public void setNewBox (Coords box);
 	
 	public void resetNewBoxes ();
+	
+	public void addTemporaryWall (Coords w);
+	
+	public void resetTempWalls ();
 	
 }
