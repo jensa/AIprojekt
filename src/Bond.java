@@ -31,7 +31,8 @@ public class Bond implements Agent{
 	@Override
 	public String solve(Board solveBoard) {
 
-
+		long startTime = System.currentTimeMillis();
+		long timeLimit = 55;
 		Board board = solveBoard;
 		//		System.out.println("solve");
 		boardHeight = board.getHeight ();
@@ -48,11 +49,12 @@ public class Bond implements Agent{
 		//		board.printMap();
 		states.add(board);
 		String path = "";
-		
-		while (!states.isEmpty()) {
+		System.out.println("Time: " + startTime);
+		while (!states.isEmpty() && (System.currentTimeMillis()-startTime)/1000F < timeLimit) {
 			Board state = states.poll();
 			if (passedStates.contains(state.hash())) {
-				System.out.println("State already passed, Passed: " + passedStates.size() + ", Queue: " + states.size());	
+				if (false)
+					System.out.println("State already passed, Passed: " + passedStates.size() + ", Queue: " + states.size());	
 			}
 			if (state.isSolved()) {
 				System.out.println("We did it");
