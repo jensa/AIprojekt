@@ -31,6 +31,73 @@ public class Pathfinder {
 	public static Path findWalkablePath (Coords from, Coords to, Board board){
 		return findPath (from, to, board, WalkMode.WALK);
 	}
+	
+	public static int[][] getDistanceMatrixFromGoal(Board b) {
+		int[][] returnMatrix = new int[b.getHeight()][b.getWidth()];
+		Board bNoBox = b.noBoxClone();
+		Coords[] goals = b.getGoals();
+		
+		for (Coords goal : goals) {
+			System.out.println("headmap goal");
+			returnMatrix = getDistanceMatrixFromGoalForOneGoal(returnMatrix, bNoBox, goal);
+			
+		}
+		
+		for (int y = 0; y < returnMatrix[0].length; y++) {
+			for (int x = 0; x < returnMatrix.length; x++) {
+				if (returnMatrix[x][y] < 10) {
+					System.out.print("[0" + returnMatrix[x][y] + "] ");
+				} else {
+					System.out.print("[" + returnMatrix[x][y] + "] ");
+				}
+			}
+			System.out.println("");
+			
+		}
+		return returnMatrix;
+	}
+	
+	private static int[][] getDistanceMatrixFromGoalForOneGoal(int[][] goalMatrix, Board board, Coords goal) {
+		Board b = board.noBoxClone();
+		int[][] map = goalMatrix;
+		Stack<Coords> queue = new Stack<Coords> ();
+		boolean[][] visited = new boolean[b.getWidth()][b.getHeight()];
+		map[goal.x][goal.y] = 1;
+		queue.push(goal);
+		
+		while (!queue.isEmpty()){
+			Coords c = queue.pop();
+			visited[c.x][c.y] = true;
+			ArrayList<Coords> cells = Tools.createAdjacentCells(c, b);
+			
+			for (int i=0; i<cells.size();i++){
+				Coords adjacentCell = cells.get(i);
+
+				if (adjacentCell.x < 0 || adjacentCell.y < 0 || adjacentCell.y > b.getHeight() -1 || adjacentCell.x > b.getWidth() -1) {
+					System.out.println("exit");
+				} else if (b.getTileAt(adjacentCell) == Surf.goal) {
+					map[adjacentCell.x][adjacentCell.y] = 1;
+					if (!visited[adjacentCell.x][adjacentCell.y]) {
+						queue.push(adjacentCell);
+					}
+					// found a goal. Should be 0.	
+				} else if (b.getTileAt(adjacentCell) == Surf.wall) {
+					int u = 0;
+				} else if (map[adjacentCell.x][adjacentCell.y] > (map [c.x][c.y]+1) || (map[adjacentCell.x][adjacentCell.y] == 0) ) {
+					int value = map [c.x][c.y]+1;
+					
+					map [adjacentCell.x][adjacentCell.y] = value;
+					
+					queue.push(adjacentCell);
+				}
+			}
+			
+		}
+			
+
+		return map;
+	}
+	
 
 	/**
 	 * Finds a walkable path from A to B, and returns it as a series of direction chars (U,D,L,R)
@@ -134,7 +201,7 @@ public class Pathfinder {
 	}
 
 	/**
-	 * Returnera en lista på rutor vi kan stå på.
+	 * Returnera en lista pï¿½ rutor vi kan stï¿½ pï¿½.
 	 * @param cell
 	 * @param to 
 	 * @return
@@ -241,7 +308,7 @@ public class Pathfinder {
 		return new Coords (bestGoal.x, bestGoal.y);
 	}
 	/**
-	 * Returnera en lista på rutor vi kan stå på.
+	 * Returnera en lista pï¿½ rutor vi kan stï¿½ pï¿½.
 	 * @param cell
 	 * @param goal 
 	 * @return
