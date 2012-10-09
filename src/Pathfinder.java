@@ -32,8 +32,8 @@ public class Pathfinder {
 		return findPath (from, to, board, WalkMode.WALK);
 	}
 	
-	public static int[][] getDistanceMatrixFromGoal(Board b) {
-		int[][] returnMatrix = new int[b.getHeight()][b.getWidth()];
+	public static char[][] getDistanceMatrixFromGoal(Board b) {
+		char[][] returnMatrix = new char[b.getHeight()][b.getWidth()];
 		Board bNoBox = b.noBoxClone();
 		Coords[] goals = b.getGoals();
 		
@@ -57,9 +57,9 @@ public class Pathfinder {
 		return returnMatrix;
 	}
 	
-	private static int[][] getDistanceMatrixFromGoalForOneGoal(int[][] goalMatrix, Board board, Coords goal) {
+	private static char[][] getDistanceMatrixFromGoalForOneGoal(char[][] goalMatrix, Board board, Coords goal) {
 		Board b = board.noBoxClone();
-		int[][] map = goalMatrix;
+		char[][] map = goalMatrix;
 		Stack<Coords> queue = new Stack<Coords> ();
 		boolean[][] visited = new boolean[b.getWidth()][b.getHeight()];
 		map[goal.x][goal.y] = 1;
@@ -84,7 +84,7 @@ public class Pathfinder {
 				} else if (b.getTileAt(adjacentCell) == Surf.wall) {
 					int u = 0;
 				} else if (map[adjacentCell.x][adjacentCell.y] > (map [c.x][c.y]+1) || (map[adjacentCell.x][adjacentCell.y] == 0) ) {
-					int value = map [c.x][c.y]+1;
+					char value = (char) (map [c.x][c.y]+1);
 					
 					map [adjacentCell.x][adjacentCell.y] = value;
 					
