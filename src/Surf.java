@@ -31,7 +31,7 @@ public class Surf implements Board{
 	public ArrayList<Coords> tempBoxes = new ArrayList<Coords> ();
 	public ArrayList<Coords> tempBoxGoals = new ArrayList<Coords> ();
 	public ArrayList<Coords> tempBoxGoalWalls = new ArrayList<Coords> ();
-	
+
 
 
 	public Surf (int longestRow, String[] rows){
@@ -202,12 +202,12 @@ public class Surf implements Board{
 		}
 		return hash;*/
 	}
-	
+
 	public void removeBox (Coords box){
 		boxes.remove(box);
 		boardMatrix[box.x][box.y] = wall;
 	}
-	
+
 	public void removeGoal (Coords goal){
 		boxes.remove(goal);
 		boardMatrix[goal.x][goal.y] = wall;
@@ -283,7 +283,7 @@ public class Surf implements Board{
 		}
 		return true;
 	}
-	
+
 	public void printMap (){
 		printMap (0);
 	}
@@ -297,8 +297,7 @@ public class Surf implements Board{
 					System.out.print("["+boardMatrix[j][i]+"]");
 			System.out.print("\n");
 		}
-//		if (path != null)
-//			System.out.println (path.toString());
+		System.out.println ("Score: "+getScore ());
 		System.out.println("-----------------------");
 		if (sleep > 0){
 			try {
@@ -372,9 +371,13 @@ public class Surf implements Board{
 		int score = 0;
 		for (Coords c : goals){
 			if (getTileAt (c) == boxGoal)
-				score ++;
+				score --;
 		}
-		return score+scoreMod;
+		for (Coords c : boxes){
+			char heatMapResult = Bond.heatMap[c.x][c.y];
+			score += heatMapResult;
+		}
+		return scoreMod+score;
 
 	}
 
@@ -389,6 +392,11 @@ public class Surf implements Board{
 		else if (o.getScore() < getScore ())
 			return 1;
 		return 0;
+	}
+	
+	@Override
+	public String toString (){
+		return ""+getScore ();
 	}
 
 	/*
@@ -447,7 +455,7 @@ public class Surf implements Board{
 		tempBoxes.clear();
 		tempBoxGoals.clear();
 	}
-	
+
 	public void addTemporaryWall (Coords w){
 		if (tempBoxGoalWalls.contains(w))
 			return;
@@ -456,7 +464,7 @@ public class Surf implements Board{
 			boardMatrix[w.x][w.y] = wall;
 		}
 	}
-	
+
 	public void resetTempWalls (){
 		for (Coords c : tempBoxGoalWalls)
 			boardMatrix[c.x][c.y] = boxGoal;
@@ -470,7 +478,7 @@ public class Surf implements Board{
 			return true;
 		return false;
 	}
-	
+
 	public boolean isTileWall(Coords c) {
 		char tile = boardMatrix[c.x][c.y];
 		return tile == wall;

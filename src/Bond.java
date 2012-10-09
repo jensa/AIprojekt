@@ -24,6 +24,7 @@ public class Bond implements Agent{
 	HashSet<String> passedStates = new HashSet<String>();
 	private boolean[][] guaranteedDeadlocks;
 	private final int MAX_PATH_SIZE = 1000;
+	public static char[][] heatMap;
 	//	static boolean[][] deadlockMatrix;
 
 
@@ -38,6 +39,7 @@ public class Bond implements Agent{
 		guaranteedDeadlocks = Tools.createMatrix(solveBoard);
 		//		deadlockMatrix = calculateDeadlock (board);
 		Tools.printBipartiteArray(guaranteedDeadlocks, boardHeight, boardWidth);
+		heatMap = Pathfinder.getDistanceMatrixFromGoal(board);
 		if (boardHeight > 1){
 			//			Tools.doWalk("LDLRDRUDRRUDRRDDLLLLLUDRRRRRUULLLLULLDLLURUUUURRRRRDDDDLDRLLLURDRRUUUUULLLLLDDDDRLUUUURRRRRDDDDDLLLLULUUUURRRRRDDDDDLLURDRULDLLDDRRRRRUULLLRRRDDLLLLLUULULUUUURRRRRDDDDLLLRRRUUUULLLLLDDDDLDRUUUUURRRRRDDDDLLLUURDLDDDDRRRRRUUUL", board);
 			//			return "LDLRDRUDRRUDRRDDLLLLLUDRRRRRUULLLLULLDLLURUUUURRRRRDDDDLDRLLLURDRRUUUUULLLLLDDDDRLUUUURRRRRDDDDDLLLLULUUUURRRRRDDDDDLLURDRULDLLDDRRRRRUULLLRRRDDLLLLLUULULUUUURRRRRDDDDLLLRRRUUUULLLLLDDDDLDRUUUUURRRRRDDDDLLLUURDLDDDDRRRRRUUUL";
@@ -102,7 +104,7 @@ public class Bond implements Agent{
 				if (moved != null){
 					matchStates.add(moved);
 					newBoard = moved;
-					newBoard.modScore(2000);
+					newBoard.modScore(-1000);
 					from = newBoard.getPlayer();
 				}
 				shuffledMatches = Matcher.getMatch(moved);
@@ -274,12 +276,16 @@ public class Bond implements Agent{
 		if (BondHeuristics.dynamicDeadlock(to, newBoard)){
 			return null;
 		}
-		if (board.getTileAt(from) == Surf.boxGoal && newBoard.getTileAt(to) == Surf.boxGoal)
-			newBoard.modScore(-5);
 		if (BondHeuristics.goalCorral (to, newBoard)){
+			/*
+			try {
+				Thread.sleep(2000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}*/
 			newBoard.removeBox(to);
 			newBoard.removeGoal(to);
-			newBoard.modScore(Integer.MAX_VALUE/2);
+			newBoard.modScore(-10000);
 		}
 		while (!ignoreTunnels && BondHeuristics.tunnelPush (from, to, inTo, newBoard)){
 			//			System.out.println("Tunnel detected. pushing "+inTo);
@@ -287,7 +293,7 @@ public class Bond implements Agent{
 			newBoard.setPath(new Path (newBoard.getPath(), movedDirection));
 			from = to;
 			to = CoordHelper.nextCoordInDirection(inTo, from);
-			newBoard.modScore(10);
+//			newBoard.modScore(-5);
 		}
 		return newBoard;
 	}

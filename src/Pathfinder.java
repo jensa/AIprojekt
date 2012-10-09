@@ -33,7 +33,7 @@ public class Pathfinder {
 	}
 	
 	public static char[][] getDistanceMatrixFromGoal(Board b) {
-		char[][] returnMatrix = new char[b.getHeight()][b.getWidth()];
+		char[][] returnMatrix = new char[b.getWidth ()][b.getHeight ()];
 		Board bNoBox = b.noBoxClone();
 		Coords[] goals = b.getGoals();
 		
