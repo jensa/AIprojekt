@@ -38,7 +38,7 @@ public class Bond implements Agent{
 		boardWidth = board.getWidth ();
 		guaranteedDeadlocks = Tools.createMatrix(solveBoard);
 		//		deadlockMatrix = calculateDeadlock (board);
-		Tools.printBipartiteArray(guaranteedDeadlocks, boardHeight, boardWidth);
+//		Tools.printBipartiteArray(guaranteedDeadlocks, boardHeight, boardWidth);
 		heatMap = Pathfinder.getDistanceMatrixFromGoal(board);
 		if (boardHeight > 1){
 			//			Tools.doWalk("LDLRDRUDRRUDRRDDLLLLLUDRRRRRUULLLLULLDLLURUUUURRRRRDDDDLDRLLLURDRRUUUUULLLLLDDDDRLUUUURRRRRDDDDDLLLLULUUUURRRRRDDDDDLLURDRULDLLDDRRRRRUULLLRRRDDLLLLLUULULUUUURRRRRDDDDLLLRRRUUUULLLLLDDDDLDRUUUUURRRRRDDDDLLLUURDLDDDDRRRRRUUUL", board);
@@ -51,7 +51,7 @@ public class Bond implements Agent{
 		String path = "";
 		while (!states.isEmpty()) {
 			Board state = states.poll();
-			state.printMap();
+//			state.printMap();
 			if (passedStates.contains(state.hash()))
 				continue;
 			if (state.isSolved()) {
@@ -61,33 +61,34 @@ public class Bond implements Agent{
 				break;
 			} else {
 				passedStates.add(state.hash ());
-				try {
-					ArrayList<Board> matchedBoxes = getNaiveBoxMatch (state);
-					if (matchedBoxes != null){
-						for (Board b : matchedBoxes)
-							states.offer(b);
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				for (Coords c : state.getBoxes()) {
-					for (Board b : moveBox(state,c))
+				ArrayList<Board> matchedBoxes = getNaiveBoxMatch (state);
+				if (matchedBoxes != null){
+					for (Board b : matchedBoxes)
 						states.offer(b);
 				}
-
-
 			}
+			for (Coords c : state.getBoxes()) {
+				for (Board b : moveBox(state,c))
+					states.offer(b);
+			}
+
+
 		}
+
 		//		System.out.println ("Solution: "+path);
 		//		Tools.doWalk(path, board);
 		return path;
 	}
 
 
-	public ArrayList<Board> getNaiveBoxMatch(Board state) throws Exception {
+	public ArrayList<Board> getNaiveBoxMatch(Board state){
 		CoordPair[] matches = Matcher.getMatch(state);
 		if (matches == null || matches.length < 1)
 			return null;
+//		System.out.println ("Matches");
+//		for (CoordPair cp : matches)
+//			System.out.println ("Match: "+cp);
+//		state.printMap();
 		Board newBoard = state.clone();
 		//		System.out.println ("Found "+matches.length+" matches for map:");
 		//		for (CoordPair p : matches)
@@ -96,21 +97,33 @@ public class Bond implements Agent{
 		Coords from = matches[0].from;
 
 		ArrayList<Board> matchStates = new ArrayList<Board> ();
-		for (CoordPair[] shuffledMatches : shuffleMatches(matches)){
-			while (shuffledMatches != null && shuffledMatches.length>0){
-				CoordPair match = shuffledMatches[0];
-				from = match.from;
-				Board moved = performBoxMoveToCoords (from, match.to, match.p, newBoard);
-				if (moved != null){
-					matchStates.add(moved);
-					newBoard = moved;
-					newBoard.modScore(-1000);
-					from = newBoard.getPlayer();
-				}
-				shuffledMatches = Matcher.getMatch(moved);
+		//		for (CoordPair[] shuffledMatches : shuffleMatches(matches)){
 
+		while (matches != null && matches.length>0){
+			CoordPair match = matches[0];
+			int i = 1;
+			while (i < matches.length && match.p == null){
+				match = matches[i];
+				i++;
 			}
+			from = match.from;
+//			System.out.println ("Before move "+match+": (total matches="+matches.length);
+//			System.out.println("using path: "+match.p);
+//			newBoard.printMap();
+			Board moved = performBoxMoveToCoords (from, match.to, match.p, newBoard);
+			
+			if (moved != null){
+//				System.out.println ("After move:");
+//				moved.printMap();
+				matchStates.add(moved);
+				newBoard = moved;
+				newBoard.modScore(-(matches.length*15));
+				from = newBoard.getPlayer();
+			}
+			matches = Matcher.getMatch(moved);
+
 		}
+		//		}
 		//		System.out.println ("After moving:");
 		//		newBoard.printMap();
 		return matchStates;
@@ -118,7 +131,7 @@ public class Bond implements Agent{
 
 	private ArrayList<CoordPair[]> shuffleMatches (CoordPair[] pairs){
 		ArrayList<CoordPair[]> shuffles = new ArrayList<CoordPair[]> ();
-		
+
 		for (int i=0;i<pairs.length;i++){
 			CoordPair[] shuffled = pairs.clone();
 			CoordPair saved = pairs[0];
@@ -138,8 +151,8 @@ public class Bond implements Agent{
 	 */
 	private ArrayList<Board> moveBox(Board board,Coords inFrom) {
 		ArrayList<Board> allDirs = moveBoxInAllDirections (board, inFrom);
-//		ArrayList<Board> goalMoves = moveBoxToAllGoals (board, inFrom, false);
-//		allDirs.addAll(goalMoves);
+		//		ArrayList<Board> goalMoves = moveBoxToAllGoals (board, inFrom, false);
+		//		allDirs.addAll(goalMoves);
 		return allDirs;
 	}
 	/**
@@ -242,27 +255,33 @@ public class Bond implements Agent{
 		Coords from = new Coords (inFrom.x, inFrom.y);
 		Coords to = CoordHelper.nextCoordInDirection(inTo, from);
 
-		if (guaranteedDeadlocks[to.y][to.x])
+		if (guaranteedDeadlocks[to.y][to.x]){
+//			System.out.println ("guarateeddeadlocks");
 			return null;
+		}
 
 		Coords pushingPlayerPosition = Tools.getPushingPlayerPosition (inFrom, to);
 		if (!board.isTileWalkable(pushingPlayerPosition, disregardBoxes) || !board.isTileWalkable(to, disregardBoxes))
 			return null;
 
 		Path pathToPos = Pathfinder.findPath (player, pushingPlayerPosition, board, Pathfinder.WalkMode.WALK);
-		if (pathToPos == null)
+		if (pathToPos == null){
+//			System.out.println ("no walkpath to box");
 			return null;
+		}
 		if (board.getPath() != null){
 			if (pathToPos.direction == '?')
 				pathToPos = board.getPath();
 			else
 				pathToPos.getRoot().parent = board.getPath();
 		}
-		if (pathToPos.getSize() > MAX_PATH_SIZE)
-			return null;
+		//		if (pathToPos.getSize() > MAX_PATH_SIZE)
+		//			return null;
 		Board newBoard = board.clone();
-		if (passedStates.contains(newBoard))
+		if (passedStates.contains(newBoard)){
+//			System.out.println ("already passed this state");
 			return null;
+		}
 		newBoard.modScore(board.getScore());
 		char movedDirection = Tools.getMovedDirection (inTo);
 		Path movedPath = new Path (pathToPos, movedDirection);
@@ -271,18 +290,14 @@ public class Bond implements Agent{
 		newBoard.getPlayer().y = pushingPlayerPosition.y;
 		newBoard.movePlayer(inTo);
 		if (BondHeuristics.deathSquare(to, newBoard)){
+//			System.out.println ("deathsquare");
 			return null;
 		}
 		if (BondHeuristics.dynamicDeadlock(to, newBoard)){
+//			System.out.println ("dynamic"+from+" -> "+to);
 			return null;
 		}
 		if (BondHeuristics.goalCorral (to, newBoard)){
-			/*
-			try {
-				Thread.sleep(2000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}*/
 			newBoard.removeBox(to);
 			newBoard.removeGoal(to);
 			newBoard.modScore(-10000);
@@ -293,7 +308,7 @@ public class Bond implements Agent{
 			newBoard.setPath(new Path (newBoard.getPath(), movedDirection));
 			from = to;
 			to = CoordHelper.nextCoordInDirection(inTo, from);
-//			newBoard.modScore(-5);
+			//			newBoard.modScore(-5);
 		}
 		return newBoard;
 	}

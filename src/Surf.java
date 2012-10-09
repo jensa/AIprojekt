@@ -371,12 +371,18 @@ public class Surf implements Board{
 		int score = 0;
 		for (Coords c : goals){
 			if (getTileAt (c) == boxGoal)
-				score --;
+				score -= 100;
 		}
 		for (Coords c : boxes){
 			char heatMapResult = Bond.heatMap[c.x][c.y];
 			score += heatMapResult;
 		}
+		/*
+		CoordPair[] cp = Matcher.getMatch(this);
+		if (cp != null)
+			score -= Matcher.getMatch(this).length*10;*/
+		if (path != null)
+			score+=path.size;
 		return scoreMod+score;
 
 	}
@@ -393,7 +399,7 @@ public class Surf implements Board{
 			return 1;
 		return 0;
 	}
-	
+
 	@Override
 	public String toString (){
 		return ""+getScore ();

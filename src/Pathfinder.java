@@ -38,22 +38,22 @@ public class Pathfinder {
 		Coords[] goals = b.getGoals();
 		
 		for (Coords goal : goals) {
-			System.out.println("headmap goal");
+//			System.out.println("headmap goal");
 			returnMatrix = getDistanceMatrixFromGoalForOneGoal(returnMatrix, bNoBox, goal);
 			
 		}
-		
+		/*
 		for (int y = 0; y < returnMatrix[0].length; y++) {
 			for (int x = 0; x < returnMatrix.length; x++) {
 				if (returnMatrix[x][y] < 10) {
-					System.out.print("[0" + returnMatrix[x][y] + "] ");
+					System.out.print("[0" + (returnMatrix[x][y]+0) + "] ");
 				} else {
-					System.out.print("[" + returnMatrix[x][y] + "] ");
+					System.out.print("[" + (returnMatrix[x][y]+0) + "] ");
 				}
 			}
 			System.out.println("");
 			
-		}
+		}*/
 		return returnMatrix;
 	}
 	
