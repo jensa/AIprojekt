@@ -31,8 +31,7 @@ public class Bond implements Agent{
 	@Override
 	public String solve(Board solveBoard) {
 
-		long startTime = System.currentTimeMillis();
-		long timeLimit = 55;
+
 		Board board = solveBoard;
 		//		System.out.println("solve");
 		boardHeight = board.getHeight ();
@@ -49,19 +48,17 @@ public class Bond implements Agent{
 		//		board.printMap();
 		states.add(board);
 		String path = "";
-		System.out.println("Time: " + startTime);
-		while (!states.isEmpty() && (System.currentTimeMillis()-startTime)/1000F < timeLimit) {
+		while (!states.isEmpty()) {
 			Board state = states.poll();
-			if (passedStates.contains(state.hash())) {
-				if (false)
-					System.out.println("State already passed, Passed: " + passedStates.size() + ", Queue: " + states.size());	
-			}
+			if (passedStates.contains(state.hash()))
+				continue;
 			if (state.isSolved()) {
 				System.out.println("We did it");
 				//				state.printMap();
 				path = state.getPath().toString();
 				break;
 			} else {
+				passedStates.add(state.hash ());
 				try {
 					ArrayList<Board> matchedBoxes = getNaiveBoxMatch (state);
 					if (matchedBoxes != null){
@@ -259,8 +256,6 @@ public class Bond implements Agent{
 		if (BondHeuristics.deathSquare(to, newBoard)){
 			return null;
 		}
-		if (!passedStates.add(newBoard.hash()))
-			return null;
 		if (board.getTileAt(from) == Surf.boxGoal && newBoard.getTileAt(to) == Surf.boxGoal)
 			newBoard.modScore(-5);
 		if (BondHeuristics.goalCorral (to, newBoard)){
@@ -276,7 +271,7 @@ public class Bond implements Agent{
 			to = CoordHelper.nextCoordInDirection(inTo, from);
 			newBoard.modScore(10);
 		}
-//						newBoard.printMap();
+		newBoard.printMap();
 		return newBoard;
 	}
 }

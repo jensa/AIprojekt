@@ -31,13 +31,13 @@ public class Client {
 			int longestRow = 0;
 			for(int i=0;i<lNumRows;i++)	{
 				lLine=lIn.readLine();
-//				System.out.println(lLine);
+				System.out.println(lLine);
 				if (longestRow < lLine.length())
 					longestRow = lLine.length();
 				rows[i] = lLine;
 			}
 			Surf board = new Surf (longestRow, rows);
-			board.printMap();
+//			board.printMap();
 			Agent bond = new Bond();
 			//now, we should find a path from the player to any goal
 

@@ -20,6 +20,7 @@ public class Matcher {
 
 		int[] boxHasEdge = new int[boxes.length];
 		int[] goalHasEdge = new int[goals.length];
+		ArrayList<Path> capz = new ArrayList<Path> ();
 		Arrays.fill(boxHasEdge, -1);Arrays.fill(goalHasEdge, -1);
 		int numBoxes = 0;
 		int numGoals = 0;
@@ -42,6 +43,7 @@ public class Matcher {
 					}
 					edgesA.add(boxHasEdge[i]);
 					edgesB.add(goalHasEdge[j]);
+					capz.add(p);
 				}
 			}
 		}
