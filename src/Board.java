@@ -10,7 +10,7 @@ public interface Board extends Comparable<Board>{
 	public Board clone();
 	public Board noBoxClone ();
 		
-	public void movePlayer (Direction dir);
+	public void movePlayer (Direction dir) throws IllegalMoveException;
 	
 	public char getTileAt (Coords c);
 	
@@ -47,8 +47,6 @@ public interface Board extends Comparable<Board>{
 	
 	public void removeBox (Coords box);
 	
-	public String hash();
-	
 	public Path getPath ();
 	
 	public boolean setPath (Path path);
@@ -68,5 +66,7 @@ public interface Board extends Comparable<Board>{
 	public void addTemporaryWall (Coords w);
 	
 	public void resetTempWalls ();
+	
+	String hash(boolean countPlayer);
 	
 }

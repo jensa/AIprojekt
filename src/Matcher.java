@@ -9,7 +9,7 @@ import java.util.Arrays;
 
 public class Matcher {
 
-	public static CoordPair[] getMatch (Board b) throws Exception{
+	public static CoordPair[] getMatch (Board b){
 		if (b == null)
 			return null;
 		//		b.printMap();

@@ -222,7 +222,11 @@ public class JohnnyEnglish implements Agent{
 				break;
 			}
 			if (direction != null)
-				b.movePlayer(direction);
+				try {
+					b.movePlayer(direction);
+				} catch (IllegalMoveException e1) {
+					e1.printStackTrace();
+				}
 			g.clear();
 			g.drawMap(b.getBackingMatrix(), b.getPlayer().getX(), b.getPlayer().getY());
 		}

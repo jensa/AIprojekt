@@ -15,11 +15,11 @@ public class MaxFlow {
 	private int numberOfEdges;
 
 	private Queue q;
-	
 
-	public MaxFlow() throws Exception{
+
+	public MaxFlow() {
 	}
-	public Graph run(int[] froms,int[] tos,int[] caps,int verts, int src,int sink,int edges) throws Exception{
+	public Graph run(int[] froms,int[] tos,int[] caps,int verts, int src,int sink,int edges){
 		this.sink = sink;
 		this.src = src;
 		this.numberOfEdges= edges;
@@ -35,7 +35,7 @@ public class MaxFlow {
 		return g;
 	}
 
-	public void edmondsKarp() throws Exception{
+	public void edmondsKarp(){
 		ArrayList<Integer> path = breadthFirst();
 		while(path != null){
 			//Find min flow in path
@@ -46,40 +46,45 @@ public class MaxFlow {
 		}
 
 	}
-	private ArrayList<Integer> breadthFirst() throws Exception {
+	private ArrayList<Integer> breadthFirst() {
+
 		q = new Queue();
 		ArrayList<Integer> path = new ArrayList<Integer>();
-		while(true){
-			q.Put(src);
-			int[] cameFrom = new int[numberOfVertices+1];
-			boolean[] visited = new boolean[numberOfVertices+1];
-			Arrays.fill(cameFrom,Integer.MIN_VALUE);
-			visited[src] = true;
-			boolean pathFound = false;
-			while(!q.IsEmpty() && !pathFound){
-				int curr = (Integer) q.Get();
-				visited[curr] = true;
-				Edge edgesF = g.getEdgesForth(curr);
-				Edge edgesB = g.getEdgesBack(curr);
-				//Check if this node's edges has rest capacity
-				//and hasn't been visited before this search
-				pathFound = findValidEdges(cameFrom,visited,edgesF,curr,1);
-				if(!pathFound){
-					//Check back edges aswell
-					pathFound = findValidEdges(cameFrom,visited,edgesB,curr,-1);
+		try{
+			while(true){
+				q.Put(src);
+				int[] cameFrom = new int[numberOfVertices+1];
+				boolean[] visited = new boolean[numberOfVertices+1];
+				Arrays.fill(cameFrom,Integer.MIN_VALUE);
+				visited[src] = true;
+				boolean pathFound = false;
+				while(!q.IsEmpty() && !pathFound){
+					int curr = (Integer) q.Get();
+					visited[curr] = true;
+					Edge edgesF = g.getEdgesForth(curr);
+					Edge edgesB = g.getEdgesBack(curr);
+					//Check if this node's edges has rest capacity
+					//and hasn't been visited before this search
+					pathFound = findValidEdges(cameFrom,visited,edgesF,curr,1);
+					if(!pathFound){
+						//Check back edges aswell
+						pathFound = findValidEdges(cameFrom,visited,edgesB,curr,-1);
+					}
+				}
+				if(pathFound){
+					int vertNo = sink;
+					while(Math.abs(vertNo) != src){
+						path.add(vertNo);
+						vertNo = cameFrom[Math.abs(vertNo)];
+					}
+					path.add(src);
+					return path;
+				}else{
+					return null;
 				}
 			}
-			if(pathFound){
-				int vertNo = sink;
-				while(Math.abs(vertNo) != src){
-					path.add(vertNo);
-					vertNo = cameFrom[Math.abs(vertNo)];
-				}
-				path.add(src);
-				return path;
-			}else{
-				return null;
-			}
+		} catch (Exception e){
+			return new ArrayList<Integer> ();
 		}
 	}
 	//Returns true if sink was found

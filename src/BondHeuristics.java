@@ -89,10 +89,35 @@ public class BondHeuristics {
 	}
 
 	public static boolean dynamicDeadlock (Coords box, Board b){
-		boolean boxCorner = isBoxesMakingCorners (box, b);
+		char tile = b.getTileAt(box);
+		boolean boxCorner = tile != Surf.boxGoal && tile != Surf.goal && isBoxesMakingCorners (box, b) ;
 		if (boxCorner)
 			return true;
+//		boolean noPathToGoal = isNoPathToGoal (b);
+//		if (noPathToGoal){
+//			return true;
+//		}
 		//Add more deadlock pattern recognitions ?
+		return false;
+	}
+
+	private static boolean isNoPathToGoal(Board b) {
+		for (Coords g : b.getGoals()){
+			if (b.getTileAt(g) != Surf.boxGoal){
+				boolean found = false;
+				for (Coords box : b.getBoxes()){
+					if (b.getTileAt(box) != Surf.boxGoal){
+						Path p = Pathfinder.findPushablePath(box, g, b);
+						if (p != null)
+							found = true;
+					}
+				}
+				if (!found){
+					System.out.println ("No path to goal: "+g);
+					return true;
+				}
+			}
+		}
 		return false;
 	}
 

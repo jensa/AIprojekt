@@ -53,7 +53,11 @@ public class Bourne implements Agent{
 		    case 'L': {d = Board.Direction.LEFT; break;}
 	    }
 	    
-	    board.movePlayer(d);
+	    try {
+			board.movePlayer(d);
+		} catch (IllegalMoveException e) {
+			e.printStackTrace();
+		}
 	    board.printMap();
 	}
     }
