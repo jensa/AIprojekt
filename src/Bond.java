@@ -55,9 +55,11 @@ public class Bond implements Agent{
 			if (passedStates.contains(state.hash()))
 				continue;
 			if (state.isSolved()) {
-				System.out.println("We did it");
+//				System.out.println("We did it");
 				//				state.printMap();
 				path = state.getPath().toString();
+				if (path.charAt(0) == '?')
+					path = path.substring(1,path.length());
 				break;
 			} else {
 				passedStates.add(state.hash ());
