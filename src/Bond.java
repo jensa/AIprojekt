@@ -23,9 +23,8 @@ public class Bond implements Agent{
 	PriorityQueue<Board> states = new PriorityQueue<Board>();
 	HashSet<String> passedStates = new HashSet<String>();
 	private boolean[][] guaranteedDeadlocks;
-	private final int MAX_PATH_SIZE = 1000;
+	public static int MAX_PATH_SIZE = 1000;
 	public static char[][] heatMap;
-	//	static boolean[][] deadlockMatrix;
 
 
 	@Override
@@ -33,32 +32,27 @@ public class Bond implements Agent{
 
 
 		Board board = solveBoard;
-		//		System.out.println("solve");
 		boardHeight = board.getHeight ();
 		boardWidth = board.getWidth ();
 		guaranteedDeadlocks = Tools.createMatrix(solveBoard);
-				Tools.printBipartiteArray(guaranteedDeadlocks, boardHeight, boardWidth);
+		Tools.printBipartiteArray(guaranteedDeadlocks, boardHeight, boardWidth);
 		heatMap = Pathfinder.getDistanceMatrixFromGoal(board);
 		//		board.printMap();
 		states.add(board);
 		String path = "";
 		while (!states.isEmpty()) {
 			Board state = states.poll();
-			//			state.printMap();
 			if (passedStates.contains(state.hash())){
-
-//				System.out.println ("already passed this state");
 				continue;
 			}if (state.isSolved()) {
-				//				System.out.println("We did it");
-				//				state.printMap();
 				path = state.getPath().toString();
+
 				if (path.charAt(0) == '?')
 					path = path.substring(1,path.length());
 				break;
 			} else {
 				passedStates.add(state.hash ());
-				ArrayList<Board> matchedBoxes = getNaiveBoxMatch (state);
+				ArrayList<Board> matchedBoxes = getBipartiteMatch (state);
 				if (matchedBoxes != null){
 					for (Board b : matchedBoxes)
 						states.offer(b);
@@ -72,30 +66,19 @@ public class Bond implements Agent{
 
 		}
 
-				System.out.println ("Solution: "+path);
+		System.out.println ("Solution: "+path);
 		//		Tools.doWalk(path, board);
 		return path;
 	}
 
 
-	public ArrayList<Board> getNaiveBoxMatch(Board state){
+	public ArrayList<Board> getBipartiteMatch(Board state){
 		CoordPair[] matches = Matcher.getMatch(state);
 		if (matches == null || matches.length < 1)
 			return null;
-		//		System.out.println ("Matches");
-		//		for (CoordPair cp : matches)
-		//			System.out.println ("Match: "+cp);
-		//		state.printMap();
 		Board newBoard = state.clone();
-		//		System.out.println ("Found "+matches.length+" matches for map:");
-		//		for (CoordPair p : matches)
-		//			System.out.println(p.toString()+": "+p.p.toString());
-		//		newBoard.printMap();
 		Coords from = matches[0].from;
-
 		ArrayList<Board> matchStates = new ArrayList<Board> ();
-		//		for (CoordPair[] shuffledMatches : shuffleMatches(matches)){
-
 		while (matches != null && matches.length>0){
 			CoordPair match = matches[0];
 			int i = 1;
@@ -104,41 +87,17 @@ public class Bond implements Agent{
 				i++;
 			}
 			from = match.from;
-			//			System.out.println ("Before move "+match+": (total matches="+matches.length);
-			//			System.out.println("using path: "+match.p);
-			//			newBoard.printMap();
 			Board moved = performBoxMoveToCoords (from, match.to, match.p, newBoard);
-
 			if (moved != null){
-				//				System.out.println ("After move:");
-				//				moved.printMap();
 				matchStates.add(moved);
 				newBoard = moved;
 				newBoard.modScore(-(matches.length*15));
 				from = newBoard.getPlayer();
 			}
 			matches = Matcher.getMatch(moved);
-
 		}
-		//		}
-		//		System.out.println ("After moving:");
-		//		newBoard.printMap();
 		return matchStates;
 	}
-
-	private ArrayList<CoordPair[]> shuffleMatches (CoordPair[] pairs){
-		ArrayList<CoordPair[]> shuffles = new ArrayList<CoordPair[]> ();
-
-		for (int i=0;i<pairs.length;i++){
-			CoordPair[] shuffled = pairs.clone();
-			CoordPair saved = pairs[0];
-			shuffled[0] = pairs[i];
-			shuffled[i] = saved;
-			shuffles.add(shuffled);
-		}
-		return shuffles;
-	}
-
 	/**
 	 * Performs some mutations of a state. Tries to move a box to any goals,
 	 * and moves the box one step in all possible directions.
@@ -151,38 +110,6 @@ public class Bond implements Agent{
 		return allDirs;
 		//		ArrayList<Board> goalMoves = moveBoxToAllGoals (board, inFrom, false);
 		//		allDirs.addAll(goalMoves);
-	}
-	/**
-	 * Tries to move a box to all goals, and returns a list of the states where this was successful
-	 * @param board
-	 * @param inFrom
-	 * @param ignoreBoxes if boxes are to be ignored while pushing (treated as walkable)
-	 * @return
-	 */
-	private ArrayList<Board> moveBoxToAllGoals(Board board, Coords inFrom, boolean ignoreBoxes) {
-		Coords[] goals = board.getGoals();
-		Coords from = new Coords (inFrom.x, inFrom.y);
-		ArrayList<Board> boards = new ArrayList<Board> ();
-		for (Coords c : goals){
-			if (board.getTileAt(c) == Surf.goal){
-				addState (moveBoxToCoords (from, c, board, ignoreBoxes), boards);
-			}
-		}
-		return boards;
-	}
-	/**
-	 * Tries to move a box to given coords. Returns a new board with the move made.
-	 * @param from
-	 * @param to
-	 * @param board
-	 * @param ignoreBoxes
-	 * @return
-	 */
-	private Board moveBoxToCoords (Coords from, Coords to, Board board, boolean ignoreBoxes){
-		Path pathToPos = Pathfinder.findPushablePath (from, to, board);
-		if (pathToPos == null)
-			return null;
-		return performBoxMoveToCoords (from, to, pathToPos, board);
 	}
 	/**
 	 * Pushes boxes on a board according to the given path and coordinates.
@@ -269,7 +196,7 @@ public class Bond implements Agent{
 
 		Path pathToPos = Pathfinder.findPath (player, pushingPlayerPosition, board, Pathfinder.WalkMode.WALK);
 		if (pathToPos == null){
-//						System.out.println ("no walkpath to box");
+			//						System.out.println ("no walkpath to box");
 			return null;
 		}
 		if (board.getPath() != null){
@@ -296,11 +223,11 @@ public class Bond implements Agent{
 			return null;
 		}
 		if (BondHeuristics.deathSquare(to, newBoard)){
-//						System.out.println ("deathsquare");
+			//						System.out.println ("deathsquare");
 			return null;
 		}
 		if (BondHeuristics.dynamicDeadlock(to, newBoard)){
-//						System.out.println ("dynamic"+from+" -> "+to);
+			//						System.out.println ("dynamic"+from+" -> "+to);
 			return null;
 		}
 		if (BondHeuristics.goalCorral (to, newBoard)){
@@ -319,7 +246,6 @@ public class Bond implements Agent{
 			newBoard.setPath(new Path (newBoard.getPath(), movedDirection));
 			from = to;
 			to = CoordHelper.nextCoordInDirection(inTo, from);
-			//			newBoard.modScore(-5);
 		}
 		return newBoard;
 	}
