@@ -37,24 +37,19 @@ public class Bond implements Agent{
 		boardHeight = board.getHeight ();
 		boardWidth = board.getWidth ();
 		guaranteedDeadlocks = Tools.createMatrix(solveBoard);
-		//		deadlockMatrix = calculateDeadlock (board);
-		//		Tools.printBipartiteArray(guaranteedDeadlocks, boardHeight, boardWidth);
+				Tools.printBipartiteArray(guaranteedDeadlocks, boardHeight, boardWidth);
 		heatMap = Pathfinder.getDistanceMatrixFromGoal(board);
-		if (boardHeight > 1){
-			//			Tools.doWalk("LDLRDRUDRRUDRRDDLLLLLUDRRRRRUULLLLULLDLLURUUUURRRRRDDDDLDRLLLURDRRUUUUULLLLLDDDDRLUUUURRRRRDDDDDLLLLULUUUURRRRRDDDDDLLURDRULDLLDDRRRRRUULLLRRRDDLLLLLUULULUUUURRRRRDDDDLLLRRRUUUULLLLLDDDDLDRUUUUURRRRRDDDDLLLUURDLDDDDRRRRRUUUL", board);
-			//			return "LDLRDRUDRRUDRRDDLLLLLUDRRRRRUULLLLULLDLLURUUUURRRRRDDDDLDRLLLURDRRUUUUULLLLLDDDDRLUUUURRRRRDDDDDLLLLULUUUURRRRRDDDDDLLURDRULDLLDDRRRRRUULLLRRRDDLLLLLUULULUUUURRRRRDDDDLLLRRRUUUULLLLLDDDDLDRUUUUURRRRRDDDDLLLUURDLDDDDRRRRRUUUL";
-		}
-		//		board.printMap();
-		//		System.out.println("original");
 		//		board.printMap();
 		states.add(board);
 		String path = "";
 		while (!states.isEmpty()) {
 			Board state = states.poll();
 			//			state.printMap();
-			if (passedStates.contains(state.hash()))
+			if (passedStates.contains(state.hash())){
+
+//				System.out.println ("already passed this state");
 				continue;
-			if (state.isSolved()) {
+			}if (state.isSolved()) {
 				//				System.out.println("We did it");
 				//				state.printMap();
 				path = state.getPath().toString();
@@ -77,7 +72,7 @@ public class Bond implements Agent{
 
 		}
 
-		//		System.out.println ("Solution: "+path);
+				System.out.println ("Solution: "+path);
 		//		Tools.doWalk(path, board);
 		return path;
 	}
@@ -205,6 +200,9 @@ public class Bond implements Agent{
 			case 'D': dir = Board.Direction.DOWN;break;
 			case 'L': dir = Board.Direction.LEFT;break;
 			case 'R': dir = Board.Direction.RIGHT;break;
+			default:
+				b = null;
+				break;
 			}
 			b = moveBox (from, dir, b);
 			if (b == null){
@@ -271,7 +269,7 @@ public class Bond implements Agent{
 
 		Path pathToPos = Pathfinder.findPath (player, pushingPlayerPosition, board, Pathfinder.WalkMode.WALK);
 		if (pathToPos == null){
-			//			System.out.println ("no walkpath to box");
+//						System.out.println ("no walkpath to box");
 			return null;
 		}
 		if (board.getPath() != null){
@@ -284,7 +282,6 @@ public class Bond implements Agent{
 		//			return null;
 		Board newBoard = board.clone();
 		if (passedStates.contains(newBoard)){
-			//			System.out.println ("already passed this state");
 			return null;
 		}
 		newBoard.modScore(board.getScore());
@@ -299,11 +296,11 @@ public class Bond implements Agent{
 			return null;
 		}
 		if (BondHeuristics.deathSquare(to, newBoard)){
-			//			System.out.println ("deathsquare");
+//						System.out.println ("deathsquare");
 			return null;
 		}
 		if (BondHeuristics.dynamicDeadlock(to, newBoard)){
-			//			System.out.println ("dynamic"+from+" -> "+to);
+//						System.out.println ("dynamic"+from+" -> "+to);
 			return null;
 		}
 		if (BondHeuristics.goalCorral (to, newBoard)){

@@ -1,5 +1,5 @@
 
-public class IllegalMoveException extends Throwable{
+public class IllegalMoveException extends Throwable{ 
 
 	/**
 	 * 
@@ -15,7 +15,7 @@ public class IllegalMoveException extends Throwable{
 	}
 	
 	public void printError (){
-		System.out.println ("tried to move "+bo+" in direction "+di);
+//		System.out.println ("tried to move "+bo+" in direction "+di);
 	}
 
 }
