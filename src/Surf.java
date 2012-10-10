@@ -117,7 +117,7 @@ public class Surf implements Board{
 	}
 
 	@Override
-	public void movePlayer(Direction dir) {
+	public void movePlayer(Direction dir) throws IllegalMoveException{
 		int xMod = 0; int yMod = 0;
 		switch (dir){
 		case UP:
@@ -135,14 +135,20 @@ public class Surf implements Board{
 		}
 		Coords newPos = new Coords (playerPosition.getX()+xMod, playerPosition.getY()+yMod);
 		boolean emptyPosition = isTileWalkable (newPos);
+		boolean moved = false;
 		if (emptyPosition){
 			doMove (newPos);
+			moved = true;
 		}
 		if (isTileBox (newPos)){
 			Coords nextTile = new Coords (newPos.getX()+xMod, newPos.getY()+yMod);
-			if (isTileWalkable (nextTile) )
+			if (isTileWalkable (nextTile) ){
 				doBoxMove (newPos, nextTile);
+				moved = true;
+			}
 		}
+		if (!moved)
+			throw new IllegalMoveException (newPos, dir);
 	}
 
 	private void doMove(Coords newPos) {

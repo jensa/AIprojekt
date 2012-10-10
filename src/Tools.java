@@ -210,7 +210,11 @@ public class Tools {
 			case 'L': dir = Board.Direction.LEFT;break;
 			case 'R': dir = Board.Direction.RIGHT;break;
 			}
-			board.movePlayer(dir);
+			try {
+				board.movePlayer(dir);
+			} catch (IllegalMoveException e1) {
+				e1.printError();
+			}
 			board.printMap();
 			try {
 				Thread.sleep(200);

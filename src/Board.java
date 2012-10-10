@@ -10,7 +10,7 @@ public interface Board extends Comparable<Board>{
 	public Board clone();
 	public Board noBoxClone ();
 		
-	public void movePlayer (Direction dir);
+	public void movePlayer (Direction dir) throws IllegalMoveException;
 	
 	public char getTileAt (Coords c);
 	
