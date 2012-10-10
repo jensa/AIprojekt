@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.4-1.40.13 (TeX Live 2012/MacPorts 2012_4) (format=pdflatex 2012.10.10)  10 OCT 2012 21:00
+This is pdfTeX, Version 3.1415926-2.4-1.40.13 (TeX Live 2012/MacPorts 2012_4) (format=pdflatex 2012.10.10)  10 OCT 2012 21:46
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -415,14 +415,23 @@ File: ts1enc.dfu 2008/04/05 v1.1m UTF-8 support for inputenc
 (/opt/local/share/texmf-texlive-dist/tex/generic/babel/babel.sty
 Package: babel 2008/07/08 v3.8m The Babel package
 
-(/opt/local/share/texmf-texlive-dist/tex/generic/babel/english.ldf
-Language: english 2005/03/30 v3.3o English support from the babel system
+(/opt/local/share/texmf-texlive-dist/tex/generic/babel/swedish.ldf
+Language: swedish 2005/03/31 v2.3d Swedish support from the babel system
 
 (/opt/local/share/texmf-texlive-dist/tex/generic/babel/babel.def
 File: babel.def 2008/07/08 v3.8m Babel common definitions
 \babel@savecnt=\count87
 \U@D=\dimen103
 )
+
+Package babel Warning: No hyphenation patterns were loaded for
+(babel)                the language `Swedish'
+(babel)                I will use the patterns loaded for \language=0 instead.
+
+\l@swedish = a dialect from \language0
+Package babel Info: Making " an active character on input line 90.
+) (/opt/local/share/texmf-texlive-dist/tex/generic/babel/english.ldf
+Language: english 2005/03/30 v3.3o English support from the babel system
 \l@british = a dialect from \language\l@english 
 \l@UKenglish = a dialect from \language\l@english 
 \l@canadian = a dialect from \language\l@american 
@@ -468,6 +477,36 @@ Package: ltxcmds 2011/11/09 v1.22 LaTeX kernel commands for general use (HO)
 \WF@hsep=\dimen107
 \WF@tsep=\dimen108
 )
+(/opt/local/share/texmf-texlive-dist/tex/latex/caption/caption.sty
+Package: caption 2012/02/19 v3.2f Customizing captions (AR)
+
+(/opt/local/share/texmf-texlive-dist/tex/latex/caption/caption3.sty
+Package: caption3 2012/01/12 v1.4b caption3 kernel (AR)
+\captionmargin=\dimen109
+\captionmargin@=\dimen110
+\captionwidth=\dimen111
+\caption@indent=\dimen112
+\caption@parindent=\dimen113
+\caption@hangindent=\dimen114
+)
+\c@ContinuedFloat=\count90
+Package caption Info: wrapfig package is loaded.
+
+
+! Package caption Error: For a successful cooperation we need at least version
+(caption)                `2003/01/31 v3.6' of package wrapfig,
+(caption)                but only version
+(caption)                `'
+(caption)                is available.
+
+See the caption package documentation for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.1713 }{}
+          
+? 
+)
 
 LaTeX Warning: Unused global option(s):
     [article].
@@ -475,37 +514,37 @@ LaTeX Warning: Unused global option(s):
 (./report.aux)
 \openout1 = `report.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 21.
-LaTeX Font Info:    ... okay on input line 21.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 21.
-LaTeX Font Info:    ... okay on input line 21.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 21.
-LaTeX Font Info:    ... okay on input line 21.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 21.
-LaTeX Font Info:    ... okay on input line 21.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 21.
-LaTeX Font Info:    ... okay on input line 21.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 21.
-LaTeX Font Info:    ... okay on input line 21.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 21.
-LaTeX Font Info:    Try loading font information for TS1+cmr on input line 21.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 22.
+LaTeX Font Info:    ... okay on input line 22.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 22.
+LaTeX Font Info:    ... okay on input line 22.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 22.
+LaTeX Font Info:    ... okay on input line 22.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 22.
+LaTeX Font Info:    ... okay on input line 22.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 22.
+LaTeX Font Info:    ... okay on input line 22.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 22.
+LaTeX Font Info:    ... okay on input line 22.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 22.
+LaTeX Font Info:    Try loading font information for TS1+cmr on input line 22.
  (/opt/local/share/texmf-texlive-dist/tex/latex/base/ts1cmr.fd
 File: ts1cmr.fd 1999/05/25 v2.5h Standard LaTeX font definitions
 )
-LaTeX Font Info:    ... okay on input line 21.
+LaTeX Font Info:    ... okay on input line 22.
 
 (/opt/local/share/texmf-texlive-dist/tex/context/base/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count90
-\scratchdimen=\dimen109
+\scratchcounter=\count91
+\scratchdimen=\dimen115
 \scratchbox=\box27
-\nofMPsegments=\count91
-\nofMParguments=\count92
+\nofMPsegments=\count92
+\nofMParguments=\count93
 \everyMPshowfont=\toks18
-\MPscratchCnt=\count93
-\MPscratchDim=\dimen110
-\MPnumerator=\count94
-\makeMPintoPDFobject=\count95
+\MPscratchCnt=\count94
+\MPscratchDim=\dimen116
+\MPnumerator=\count95
+\makeMPintoPDFobject=\count96
 \everyMPtoPDFconversion=\toks19
 ) (/opt/local/share/texmf-texlive-dist/tex/generic/oberdiek/pdftexcmds.sty
 Package: pdftexcmds 2011/11/29 v0.20 Utility functions of pdfTeX for LuaTeX (HO
@@ -555,12 +594,14 @@ G,.JBIG2,.JB2,.eps]
 File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
 e
 ))
-LaTeX Font Info:    Try loading font information for U+msa on input line 22.
+Package caption Info: Begin \AtBeginDocument code.
+Package caption Info: End \AtBeginDocument code.
+LaTeX Font Info:    Try loading font information for U+msa on input line 23.
 
 (/opt/local/share/texmf-texlive-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2009/06/22 v3.00 AMS symbols A
 )
-LaTeX Font Info:    Try loading font information for U+msb on input line 22.
+LaTeX Font Info:    Try loading font information for U+msb on input line 23.
 
 (/opt/local/share/texmf-texlive-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2009/06/22 v3.00 AMS symbols B
@@ -568,357 +609,112 @@ File: umsb.fd 2009/06/22 v3.00 AMS symbols B
 
 LaTeX Warning: No \author given.
 
-! Argument of \begin has an extra }.
-<inserted text> 
-                \par 
-l.26 \begin
-           {figure}[h]
-? 
-Runaway argument?
-! Paragraph ended before \begin was complete.
-<to be read again> 
-                   \par 
-l.26 \begin
-           {figure}[h]
-? 
-Runaway argument?
-! Paragraph ended before \reserved@b was complete.
-<to be read again> 
-                   \par 
-l.26 \begin
-           {figure}[h]
-? 
-! Undefined control sequence.
-\@xexpast ...dafter \reserved@b \reserved@a #4\@@ 
-                                                  
-l.26 \begin
-           {figure}[h]
-? 
-
-! LaTeX Error: Illegal character in array arg.
-
-See the LaTeX manual or LaTeX Companion for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.26 \begin
-           {figure}[h]
-? 
 <bob2.pdf, id=1, 255.95625pt x 353.32pt>
 File: bob2.pdf Graphic file (type pdf)
  <use bob2.pdf>
-Package pdftex.def Info: bob2.pdf used on input line 27.
-(pdftex.def)             Requested size: 102.38068pt x 141.32549pt.
+Package pdftex.def Info: bob2.pdf used on input line 28.
+(pdftex.def)             Requested size: 76.78746pt x 105.99681pt.
 
-! Missing \endgroup inserted.
-<inserted text> 
-                \endgroup 
-l.28 \caption{Jacob Håkansson, 890625-2914}
-                                            
-? 
-! Missing } inserted.
-<inserted text> 
-                }
-l.28 \caption{Jacob Håkansson, 890625-2914}
-                                            
-? 
-! Missing } inserted.
-<inserted text> 
-                }
-l.28 \caption{Jacob Håkansson, 890625-2914}
-                                            
-? 
-! Missing \cr inserted.
-<inserted text> 
-                \cr 
-l.28 \caption{Jacob Håkansson, 890625-2914}
-                                            
-? 
-! Missing { inserted.
-<inserted text> 
-                {
-l.28 \caption{Jacob Håkansson, 890625-2914}
-                                            
-? 
-! Missing } inserted.
-<inserted text> 
-                }
-l.28 \caption{Jacob Håkansson, 890625-2914}
-                                            
-? 
-! Missing $ inserted.
-<inserted text> 
-                $
-l.28 \caption{Jacob Håkansson, 890625-2914}
-                                            
-? 
-! Missing } inserted.
-<inserted text> 
-                }
-l.28 \caption{Jacob Håkansson, 890625-2914}
-                                            
-? 
-
-! LaTeX Error: \begin{table} on input line 24 ended by \end{figure}.
-
-See the LaTeX manual or LaTeX Companion for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.29 \end{figure}
-                 
-? 
 <jens.pdf, id=2, 208.78pt x 269.005pt>
 File: jens.pdf Graphic file (type pdf)
  <use jens.pdf>
-Package pdftex.def Info: jens.pdf used on input line 31.
+Package pdftex.def Info: jens.pdf used on input line 28.
 (pdftex.def)             Requested size: 83.5105pt x 107.60008pt.
 
-! Misplaced \crcr.
-\endtabular ->\crcr 
-                    \egroup \egroup $\egroup 
-l.33 \end{tabular}
-                  
-? 
-! Extra }, or forgotten \endgroup.
-\endtabular ->\crcr \egroup \egroup 
-                                    $\egroup 
-l.33 \end{tabular}
-                  
-? 
-! Extra }, or forgotten $.
-<recently read> \egroup 
-                        
-l.33 \end{tabular}
-                  
-? 
-
-! LaTeX Error: \begin{figure} on input line 30 ended by \end{tabular}.
-
-See the LaTeX manual or LaTeX Companion for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.33 \end{tabular}
-                  
-? 
-! Missing $ inserted.
-<inserted text> 
-                $
-l.33 \end{tabular}
-                  
-? 
-! Argument of \end has an extra }.
-<inserted text> 
-                \par 
-l.35 \end
-         {figure}
-? 
-Runaway argument?
-! Paragraph ended before \end was complete.
-<to be read again> 
-                   \par 
-l.35 \end
-         {figure}
-? 
-Runaway argument?
-! Paragraph ended before \reserved@b was complete.
-<to be read again> 
-                   \par 
-l.35 \end
-         {figure}
-? 
-! Undefined control sequence.
-\@xexpast ...dafter \reserved@b \reserved@a #4\@@ 
-                                                  
-l.35 \end
-         {figure}
-? 
-
-! LaTeX Error: Illegal character in array arg.
-
-See the LaTeX manual or LaTeX Companion for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.35 \end
-         {figure}
-? 
-
-! LaTeX Error: Not in outer par mode.
-
-See the LaTeX manual or LaTeX Companion for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.36 \begin{figure}[h]
-                      
-? 
-! Undefined control sequence.
-\@xfloat ...@fltovf \fi \global \setbox \@currbox 
-                                                  \color@vbox \normalcolor \...
-l.36 \begin{figure}[h]
-                      
-? 
-! Missing number, treated as zero.
-<to be read again> 
-                   \color@vbox 
-l.36 \begin{figure}[h]
-                      
-? 
 <ludo.pdf, id=3, 313.17pt x 388.45125pt>
 File: ludo.pdf Graphic file (type pdf)
  <use ludo.pdf>
-Package pdftex.def Info: ludo.pdf used on input line 37.
-(pdftex.def)             Requested size: 125.26576pt x 155.37773pt.
+Package pdftex.def Info: ludo.pdf used on input line 31.
+(pdftex.def)             Requested size: 84.55702pt x 104.88322pt.
 
-
-! LaTeX Error: Not in outer par mode.
-
-See the LaTeX manual or LaTeX Companion for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.40 \begin{figure}[h]
-                      
-? 
-! Undefined control sequence.
-\@xfloat ...@fltovf \fi \global \setbox \@currbox 
-                                                  \color@vbox \normalcolor \...
-l.40 \begin{figure}[h]
-                      
-? 
-! Missing number, treated as zero.
-<to be read again> 
-                   \color@vbox 
-l.40 \begin{figure}[h]
-                      
-? 
 <sten.pdf, id=4, 284.06125pt x 368.37625pt>
 File: sten.pdf Graphic file (type pdf)
  <use sten.pdf>
-Package pdftex.def Info: sten.pdf used on input line 41.
-(pdftex.def)             Requested size: 113.62247pt x 147.34789pt.
+Package pdftex.def Info: sten.pdf used on input line 31.
+(pdftex.def)             Requested size: 85.21902pt x 110.51372pt.
+ [1
 
-! Too many }'s.
-\@endfloatbox ...pagefalse \outer@nobreak \egroup 
-                                                  \color@endbox 
-l.45 \end{table}
-                
-? 
-
-! LaTeX Error: \begin{document} ended by \end{table}.
-
-See the LaTeX manual or LaTeX Companion for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.45 \end{table}
-                
-? 
-! Extra \endgroup.
-<recently read> \endgroup 
-                          
-l.45 \end{table}
-                
-? 
-[1
-
-{/opt/local/var/db/texmf/fonts/map/pdftex/updmap/pdftex.map} <./bob2.pdf>]
-[2] <exampleboard.pdf, id=27, 150.5625pt x 134.5025pt>
+{/opt/local/var/db/texmf/fonts/map/pdftex/updmap/pdftex.map} <./bob2.pdf> <./je
+ns.pdf> <./ludo.pdf> <./sten.pdf>] [2] <exampleboard.pdf, id=54, 150.5625pt x 1
+34.5025pt>
 File: exampleboard.pdf Graphic file (type pdf)
- <use exampleboard.pdf>
-Package pdftex.def Info: exampleboard.pdf used on input line 98.
-(pdftex.def)             Requested size: 150.56212pt x 134.50215pt.
 
-
-LaTeX Warning: `h' float specifier changed to `ht'.
-
-[3] [4 <./exampleboard.pdf>] <dd1.pdf, id=47, 30.1125pt x 29.10875pt>
+<use exampleboard.pdf>
+Package pdftex.def Info: exampleboard.pdf used on input line 88.
+(pdftex.def)             Requested size: 120.45015pt x 107.60213pt.
+ [3 <./exampleboard.pdf>] [4]
+<dd1.pdf, id=75, 30.1125pt x 29.10875pt>
 File: dd1.pdf Graphic file (type pdf)
-
-<use dd1.pdf>
-Package pdftex.def Info: dd1.pdf used on input line 160.
+ <use dd1.pdf>
+Package pdftex.def Info: dd1.pdf used on input line 152.
 (pdftex.def)             Requested size: 30.11241pt x 29.10867pt.
- <dd2.pdf, id=48, 31.11626pt x 31.11626pt>
+
+<dd2.pdf, id=76, 31.11626pt x 31.11626pt>
 File: dd2.pdf Graphic file (type pdf)
  <use dd2.pdf>
-Package pdftex.def Info: dd2.pdf used on input line 163.
+Package pdftex.def Info: dd2.pdf used on input line 152.
 (pdftex.def)             Requested size: 31.11617pt x 31.11617pt.
 
-<dd3.pdf, id=49, 31.11626pt x 44.165pt>
+<dd3.pdf, id=77, 31.11626pt x 44.165pt>
 File: dd3.pdf Graphic file (type pdf)
  <use dd3.pdf>
-Package pdftex.def Info: dd3.pdf used on input line 169.
+Package pdftex.def Info: dd3.pdf used on input line 162.
 (pdftex.def)             Requested size: 31.11617pt x 44.16487pt.
 
-<dd4.pdf, id=50, 46.1725pt x 31.11626pt>
+<dd4.pdf, id=78, 46.1725pt x 31.11626pt>
 File: dd4.pdf Graphic file (type pdf)
  <use dd4.pdf>
-Package pdftex.def Info: dd4.pdf used on input line 172.
+Package pdftex.def Info: dd4.pdf used on input line 162.
 (pdftex.def)             Requested size: 46.17236pt x 31.11617pt.
-
-
-LaTeX Warning: `h' float specifier changed to `ht'.
-
-[5 <./dd1.pdf> <./dd2.pdf> <./dd3.pdf>] [6 <./dd4.pdf>]
-<good.pdf, id=94, 46.1725pt x 59.22125pt>
+ [5 <./dd1.pdf> <./dd2.pdf> <./dd3.pdf> <./dd4.pdf>] [6] <good.pdf, id=121, 46.
+1725pt x 59.22125pt>
 File: good.pdf Graphic file (type pdf)
- <use good.pdf>
-Package pdftex.def Info: good.pdf used on input line 249.
-(pdftex.def)             Requested size: 46.17236pt x 59.22108pt.
 
-<good2.pdf, id=95, 47.17625pt x 60.225pt>
+<use good.pdf>
+Package pdftex.def Info: good.pdf used on input line 243.
+(pdftex.def)             Requested size: 46.17236pt x 59.22108pt.
+ <good2.pdf, id=122, 47.17625pt x 60.225pt>
 File: good2.pdf Graphic file (type pdf)
  <use good2.pdf>
-Package pdftex.def Info: good2.pdf used on input line 252.
+Package pdftex.def Info: good2.pdf used on input line 243.
 (pdftex.def)             Requested size: 47.17612pt x 60.22484pt.
 
-
-LaTeX Warning: `h' float specifier changed to `ht'.
-
-[7 <./good.pdf>] <res.pdf, id=109, 225.84375pt x 240.9pt>
+[7 <./good.pdf> <./good2.pdf>] <res.pdf, id=145, 225.84375pt x 240.9pt>
 File: res.pdf Graphic file (type pdf)
- <use res.pdf>
-Package pdftex.def Info: res.pdf used on input line 288.
+
+<use res.pdf>
+Package pdftex.def Info: res.pdf used on input line 282.
 (pdftex.def)             Requested size: 90.33589pt x 96.35828pt.
-
-
-LaTeX Warning: `h' float specifier changed to `ht'.
-
-<res2.pdf, id=110, 242.9075pt x 135.50626pt>
+ <res2.pdf, id=146, 242.9075pt x 135.50626pt>
 File: res2.pdf Graphic file (type pdf)
  <use res2.pdf>
-Package pdftex.def Info: res2.pdf used on input line 293.
+Package pdftex.def Info: res2.pdf used on input line 288.
 (pdftex.def)             Requested size: 97.16127pt x 54.20152pt.
 
-
-LaTeX Warning: `h' float specifier changed to `ht'.
-
-[8 <./good2.pdf>] [9 <./res.pdf> <./res2.pdf>] (./report.aux) ) 
+[8 <./res.pdf> <./res2.pdf>] [9] (./report.aux) ) 
 Here is how much of TeX's memory you used:
- 2905 strings out of 495063
- 38545 string characters out of 3181830
- 88242 words of memory out of 3000000
- 6020 multiletter control sequences out of 15000+200000
+ 3965 strings out of 495063
+ 57593 string characters out of 3181830
+ 108872 words of memory out of 3000000
+ 7071 multiletter control sequences out of 15000+200000
  16775 words of font info for 47 fonts, out of 3000000 for 9000
  14 hyphenation exceptions out of 8191
- 37i,13n,23p,238b,289s stack positions out of 5000i,500n,10000p,200000b,50000s
- </Users/jacob/.
-texlive2012/texmf-var/fonts/pk/ljfour/jknappen/ec/ecbx1095.600pk> </Users/jacob
-/.texlive2012/texmf-var/fonts/pk/ljfour/jknappen/ec/ecbx1200.600pk> </Users/jac
-ob/.texlive2012/texmf-var/fonts/pk/ljfour/jknappen/ec/ecbx1440.600pk> </Users/j
-acob/.texlive2012/texmf-var/fonts/pk/ljfour/jknappen/ec/ecrm1000.600pk> </Users
-/jacob/.texlive2012/texmf-var/fonts/pk/ljfour/jknappen/ec/ecbx1000.600pk> </Use
-rs/jacob/.texlive2012/texmf-var/fonts/pk/ljfour/jknappen/ec/ecrm1095.600pk> </U
-sers/jacob/.texlive2012/texmf-var/fonts/pk/ljfour/jknappen/ec/ecrm1200.600pk> <
-/Users/jacob/.texlive2012/texmf-var/fonts/pk/ljfour/jknappen/ec/ecrm1728.600pk>
-</opt/local/share/texmf-texlive-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb><
-/opt/local/share/texmf-texlive-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb>
-Output written on report.pdf (9 pages, 337852 bytes).
+ 38i,12n,38p,238b,322s stack positions out of 5000i,500n,10000p,200000b,50000s
+ </Users/jacob/.texlive2012/te
+xmf-var/fonts/pk/ljfour/jknappen/ec/ecbx1095.600pk> </Users/jacob/.texlive2012/
+texmf-var/fonts/pk/ljfour/jknappen/ec/ecbx1200.600pk> </Users/jacob/.texlive201
+2/texmf-var/fonts/pk/ljfour/jknappen/ec/ecbx1440.600pk> </Users/jacob/.texlive2
+012/texmf-var/fonts/pk/ljfour/jknappen/ec/ecrm1000.600pk> </Users/jacob/.texliv
+e2012/texmf-var/fonts/pk/ljfour/jknappen/ec/ecbx1000.600pk> </Users/jacob/.texl
+ive2012/texmf-var/fonts/pk/ljfour/jknappen/ec/ecrm1095.600pk> </Users/jacob/.te
+xlive2012/texmf-var/fonts/pk/ljfour/jknappen/ec/ecrm1200.600pk> </Users/jacob/.
+texlive2012/texmf-var/fonts/pk/ljfour/jknappen/ec/ecrm1728.600pk></opt/local/sh
+are/texmf-texlive-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></opt/local/sha
+re/texmf-texlive-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb>
+Output written on report.pdf (9 pages, 849655 bytes).
 PDF statistics:
- 399 PDF objects out of 1000 (max. 8388607)
- 130 compressed objects within 2 object streams
+ 425 PDF objects out of 1000 (max. 8388607)
+ 151 compressed objects within 2 object streams
  0 named destinations out of 1000 (max. 500000)
  66 words of extra memory for PDF output out of 10000 (max. 10000000)
 

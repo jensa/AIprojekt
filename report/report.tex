@@ -3,9 +3,10 @@
 \usepackage[T1]{fontenc}
 \usepackage{textcomp}
 \usepackage[utf8]{inputenc}
-\usepackage[english]{babel}
+\usepackage[swedish,english]{babel}
 \usepackage{graphicx}
 \usepackage{wrapfig}
+\usepackage{caption}
 
 
 % See the ``Article customise'' template for come common customisations
@@ -20,31 +21,19 @@
 
 \begin{document}
 \maketitle
-\selectlanguage{english}
+\selectlanguage{swedish}
 \begin{table}[ht]
-\begin{tabular}[l]
-\begin{figure}[h]
-\includegraphics[scale=0.4]{bob2.pdf}
-\caption{Jacob Håkansson, 890625-2914}
-\end{figure}
-\begin{figure}[h]
-\includegraphics[scale=0.4]{jens.pdf}
-\caption{Jens Arvidsson, 870509-0556}
-\end{tabular}
-\begin{tabular}[r]
-\end{figure}
-\begin{figure}[h]
-\includegraphics[scale=0.4]{ludo.pdf}
-\caption{Ludvig Jonsson, 900202-4430}
-\end{figure}
-\begin{figure}[h]
-\includegraphics[scale=0.4]{sten.pdf}
-\caption{Simon Ström, 870727-0230}
-\end{figure}
+\centering
+\begin{tabular}{cc}
+\includegraphics[scale=0.3]{bob2.pdf}&\includegraphics[scale=0.4]{jens.pdf}
+\\Jacob Håkansson, 890625-2914 & Jens Arvidsson, 870509-0556
+\\\\
+\includegraphics[scale=0.27]{ludo.pdf}&\includegraphics[scale=0.3]{sten.pdf}
+\\Ludvig Jonsson, 900202-4430 & Simon Ström, 870727-0230
 \end{tabular}
 \end{table}
 \newpage
-
+\selectlanguage{english}
 \pagestyle{plain}
 
 \begin{abstract}
@@ -91,12 +80,13 @@ times. The problem of finding these paths might sound trivial, but is
 in fact very hard due to the branching factor of each step taken. This
 requires a lot of computing power, as each step makes up to 4 new
 steps available. For example, if we need to move 10 steps, this gives
-us up to $4^10 = 1048576$ possible paths. Thankfully there are methods
+us up to $4^{10} = 1048576$ possible paths. Thankfully there are methods
 to cut this number down by prioritizing certain moves and eliminate
 moves that lead to deadlocks.
 \begin{figure}[h]
-\includegraphics{exampleboard.pdf}
-\caption{A typical Sokoban board}
+\centering
+\includegraphics[scale=0.8]{exampleboard.pdf}
+\caption*{A typical Sokoban board}
 \end{figure}
 
 \section{Approach}
@@ -156,22 +146,24 @@ is discarded.
 The easiest example of a dynamic deadlock is when a move results in
 four box/wall tiles in a square (where at least one of the boxes are
 not on a goal):
-\begin{figure}[h]
-\includegraphics{dd1.pdf}
-\end{figure}
-\begin{figure}[h]
-\includegraphics{dd2.pdf}
-\end{figure}
+\begin{table}[h]
+\centering
+\begin{tabular}{cc}
+\includegraphics{dd1.pdf} & \includegraphics{dd2.pdf}
+\end{tabular}
+\end{table}
+
 The agent also detects situations where a box is cornered by a wall
 and a box, where that box is also cornered by a wall and the
 aforementioned box, as in the configurations below:
-\begin{figure}[h]
-\includegraphics{dd3.pdf}
-\end{figure}
-\begin{figure}[h]
-\includegraphics{dd4.pdf}
-\end{figure}
-\subsection{Hast table}
+\begin{table}[h]
+\centering
+\begin{tabular}{cc}
+\includegraphics{dd3.pdf} & \includegraphics{dd4.pdf}
+\end{tabular}
+\end{table}
+
+\subsection{Hash table}
 It is very inefficient to evaluate the same states multiple times. To
 avoid this we implemented a hash function and a Hash table to store
 evaluated states in. The hash is, in its default configuration,
@@ -245,12 +237,13 @@ A ‘no influence’ or ‘tunnel’ push is a push which has no impact on
 other boxes, and after which a second push in the same direction can
 only be beneficial. Two configurations lead us to draw the conclusion
 that a move was a tunnel push:
-\begin{figure}[h]
-\includegraphics{good.pdf}
-\end{figure}
-\begin{figure}[h]
-\includegraphics{good2.pdf}
-\end{figure}
+\begin{table}[h]
+\centering
+\begin{tabular}{cc}
+\includegraphics{good.pdf} & \includegraphics{good2.pdf}
+\end{tabular}
+\end{table}
+
 If a move results in any of these configurations or their rotated
 counterparts, we can safely push the box one step further in the same
 direction. In this manner, the agent can be said to consider tunnels
@@ -285,16 +278,19 @@ very efficient in tight spaces. For example, it treats long tunnels as
 one position on the board. This means that the agent is able to solve
 tight boards, that may seem very complex, very efficiently.
 \begin{figure}[h]
+\centering
 \includegraphics[scale=0.4]{res.pdf}
-\caption{An easy board for our agent}
+\caption*{An easy board for our agent}
 \end{figure}
 
 \begin{figure}[h]
+\centering
 \includegraphics[scale=0.4]{res2.pdf}
-\caption{A hard board for our agent}
+\caption*{A hard board for our agent}
 \end{figure}
 In total, our agent managed to solve 18 out of the 100 test boards,
-which must be counted as sub-par performance. 
+which must be counted as sub-par performance.
+\newpage
 \section{Reflection}
 When we approached the problem we started out by separating the group
 into pairs. Each pair would implement their own agent, then the group
