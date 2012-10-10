@@ -23,50 +23,66 @@ public class Bond implements Agent{
 	PriorityQueue<Board> states = new PriorityQueue<Board>();
 	HashSet<String> passedStates = new HashSet<String>();
 	private boolean[][] guaranteedDeadlocks;
-	public static int MAX_PATH_SIZE = 1000;
 	public static char[][] heatMap;
-
 
 	@Override
 	public String solve(Board solveBoard) {
-
-
 		Board board = solveBoard;
 		boardHeight = board.getHeight ();
 		boardWidth = board.getWidth ();
 		guaranteedDeadlocks = Tools.createMatrix(solveBoard);
-		Tools.printBipartiteArray(guaranteedDeadlocks, boardHeight, boardWidth);
+//		Tools.printBipartiteArray(guaranteedDeadlocks, boardHeight, boardWidth);
 		heatMap = Pathfinder.getDistanceMatrixFromGoal(board);
-		//		board.printMap();
 		states.add(board);
 		String path = "";
-		while (!states.isEmpty()) {
-			Board state = states.poll();
-			if (passedStates.contains(state.hash())){
-				continue;
-			}if (state.isSolved()) {
-				path = state.getPath().toString();
+		boolean emptiedStates = false;
+		boolean run = true;
+		while (run){
+			while (!states.isEmpty()) {
+				Board state = states.poll();
+				if (passedStates.contains(state.hash(emptiedStates))){
+					continue;
+				}if (state.isSolved()) {
+					path = state.getPath().toString();
 
-				if (path.charAt(0) == '?')
-					path = path.substring(1,path.length());
-				break;
-			} else {
-				passedStates.add(state.hash ());
-				ArrayList<Board> matchedBoxes = getBipartiteMatch (state);
-				if (matchedBoxes != null){
-					for (Board b : matchedBoxes)
-						states.offer(b);
+					if (path.charAt(0) == '?')
+						path = path.substring(1,path.length());
+					run = false;
+					break;
+				} else {
+					passedStates.add(state.hash (emptiedStates));
+					ArrayList<Board> matchedBoxes = getBipartiteMatch (state);
+					if (matchedBoxes != null){
+						for (Board b : matchedBoxes)
+							states.offer(b);
+					}
+				}
+				if (emptiedStates){
+					Coords[] boxes = state.getBoxes();
+					for (int i=boxes.length-1;i>=0;i--){
+						Coords c = boxes[i];
+						for (Board b : moveBox(state,c))
+							states.offer(b);
+					}
+				}
+				else{
+					for (Coords c : state.getBoxes()) {
+						for (Board b : moveBox(state,c))
+							states.offer(b);
+					}
+				}
+			}if (path.equals("")){
+				if (!emptiedStates){
+					System.out.println ("Running extra loop");
+					emptiedStates = true;
+					passedStates = new HashSet<String> ();
+					states.add(board);
+				}else{
+					run = false;
 				}
 			}
-			for (Coords c : state.getBoxes()) {
-				for (Board b : moveBox(state,c))
-					states.offer(b);
-			}
-
-
 		}
-
-		System.out.println ("Solution: "+path);
+//		System.out.println ("Solution: "+path);
 		//		Tools.doWalk(path, board);
 		return path;
 	}
@@ -108,8 +124,6 @@ public class Bond implements Agent{
 	private ArrayList<Board> moveBox(Board board,Coords inFrom) {
 		ArrayList<Board> allDirs = moveBoxInAllDirections (board, inFrom);
 		return allDirs;
-		//		ArrayList<Board> goalMoves = moveBoxToAllGoals (board, inFrom, false);
-		//		allDirs.addAll(goalMoves);
 	}
 	/**
 	 * Pushes boxes on a board according to the given path and coordinates.
@@ -205,12 +219,7 @@ public class Bond implements Agent{
 			else
 				pathToPos.getRoot().parent = board.getPath();
 		}
-		//		if (pathToPos.getSize() > MAX_PATH_SIZE)
-		//			return null;
 		Board newBoard = board.clone();
-		if (passedStates.contains(newBoard)){
-			return null;
-		}
 		newBoard.modScore(board.getScore());
 		char movedDirection = Tools.getMovedDirection (inTo);
 		Path movedPath = new Path (pathToPos, movedDirection);
@@ -223,11 +232,11 @@ public class Bond implements Agent{
 			return null;
 		}
 		if (BondHeuristics.deathSquare(to, newBoard)){
-			//						System.out.println ("deathsquare");
+//			System.out.println ("deathsquare");
 			return null;
 		}
 		if (BondHeuristics.dynamicDeadlock(to, newBoard)){
-			//						System.out.println ("dynamic"+from+" -> "+to);
+//			System.out.println ("dynamic"+from+" -> "+to);
 			return null;
 		}
 		if (BondHeuristics.goalCorral (to, newBoard)){

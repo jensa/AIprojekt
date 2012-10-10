@@ -303,7 +303,7 @@ public class Surf implements Board{
 					System.out.print("["+boardMatrix[j][i]+"]");
 			System.out.print("\n");
 		}
-		System.out.println ("Score: "+getScore ());
+//		System.out.println ("Score: "+getScore ());
 		System.out.println("-----------------------");
 		if (sleep > 0){
 			try {
@@ -338,26 +338,20 @@ public class Surf implements Board{
 	}
 
 	@Override
-	public String hash() {
-		Coords[] b = new Coords[boxes.size()]; 
+	public String hash(boolean countPlayer) {
+		int hashSize = boxes.size();
+		Coords[] b = new Coords[hashSize]; 
 		for (int i=0; i<boxes.size();i++)
 			b[i] = boxes.get(i);
 		Arrays.sort(b);
-		/*
-		int hash = 0;
-		for (int i = 0; i < b.length - 1; i++) {
-			double b1 =b[i].x*100;
-			double a = b[i].y*1;
-			double c = (a + b1)*(Math.pow(1000,b[i].id));
-			hash += c;
-		}
-		 */
 		StringBuilder builder = new StringBuilder(b.length*4);
 		for (Coords c : b){
 			builder.append(""+c.x+c.y);
 		}
+		if (countPlayer){
+			builder.append("p"+playerPosition.x+playerPosition.y);
+		}
 		return builder.toString();
-		//		return ""+hash;
 	}
 
 	@Override
@@ -379,14 +373,11 @@ public class Surf implements Board{
 			if (getTileAt (c) == boxGoal)
 				score -= 100;
 		}
+		
 		for (Coords c : boxes){
 			char heatMapResult = Bond.heatMap[c.x][c.y];
 			score += heatMapResult;
 		}
-		/*
-		CoordPair[] cp = Matcher.getMatch(this);
-		if (cp != null)
-			score -= Matcher.getMatch(this).length*10;*/
 		if (path != null)
 			score+=path.size;
 		return scoreMod+score;

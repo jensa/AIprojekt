@@ -47,8 +47,6 @@ public interface Board extends Comparable<Board>{
 	
 	public void removeBox (Coords box);
 	
-	public String hash();
-	
 	public Path getPath ();
 	
 	public boolean setPath (Path path);
@@ -68,5 +66,7 @@ public interface Board extends Comparable<Board>{
 	public void addTemporaryWall (Coords w);
 	
 	public void resetTempWalls ();
+	
+	String hash(boolean countPlayer);
 	
 }
